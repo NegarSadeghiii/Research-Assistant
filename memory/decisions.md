@@ -369,3 +369,22 @@ on `probe_zotero.py`. SOP-001 amended before the code was written.
 sufficient?" are different questions whose failures mean different things: the first
 blocks G1, the second triggers the BR-8 halt-and-report. Merging them would make the
 exit code ambiguous.
+
+### D-036 — The nine-stage lifecycle is gated, not advisory (BR-23, BR-24)
+**Date:** 2026-08-19
+**Decision:** Recorded the user's end-to-end sequence — literature → research idea →
+methodology → mathematical formulation → code → computational experiments → results →
+interpretation → manuscript — in CLAUDE.md §2.4b, with three binding rules: no skipping
+a stage holding an unresolved research decision, each stage consumes the *approved*
+outputs of the previous one, and the manuscript stage cannot begin until methodology,
+results and interpretation are all approved.
+**Reason:** User specification. Recorded as architecture rather than process guidance
+because every arrow between stages is an approval boundary, and an approval boundary is
+precisely where an unverified claim would otherwise be laundered into an established
+one. Skipping the formulation stage produces code implementing a model nobody wrote
+down (F10 + F11); starting the manuscript early is F12 by definition and P7 already
+forbids it. The gates are what keep the final manuscript's evidence chain traceable
+back to a literature record.
+**Note on axes:** §2.4b is the *research process*; §2.4 is the *build order*. They are
+different axes and the mapping between them is recorded in §2.4b so neither is mistaken
+for the other. The current build target remains lifecycle stage 1.

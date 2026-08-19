@@ -386,6 +386,41 @@ written for them until Stage 1 has landed its payload.**
 
 ---
 
+### 2.4b — The end-to-end research lifecycle (user specification)
+
+The assistant supports this sequence. It is the **process** the system serves; §2.4 is
+the **build order** in which capabilities are constructed. They are not the same axis.
+
+| # | Stage | Consumes | Build stage |
+|---|---|---|---|
+| 1 | **Literature** | the research-interest profile, the library | **1** ← current build |
+| 2 | **Research idea** | approved literature positioning | 1 |
+| 3 | **Methodology** | the approved research idea | 2 |
+| 4 | **Mathematical formulation** | the approved methodology | 2 |
+| 5 | **Code** | the approved formulation | 3 |
+| 6 | **Computational experiments** | the approved code | 3 |
+| 7 | **Results** | executed experiments | 3 |
+| 8 | **Interpretation** | validated results | 3 |
+| 9 | **Manuscript** | everything above, approved | 4 |
+
+#### The three binding rules
+
+1. ⛔ **Do not skip a stage that contains an unresolved research decision.**
+   A stage may be passed over only when it holds nothing still undecided.
+2. **Each stage consumes the *approved* outputs of the previous stage** — not its
+   drafts, not the assistant's inference of what they would say.
+3. ⛔ **The manuscript stage does not begin** until methodology, computational
+   results, and interpretation have each been reviewed and approved. (BR-24)
+
+> **Why this is architecture, not process advice.** Each arrow above is an approval
+> boundary, and an approval boundary is exactly where an unverified claim gets
+> laundered into an established one. Skipping stage 4 means code implements a
+> formulation nobody wrote down — F10 and F11 in one move. Beginning stage 9 early is
+> F12 by definition, and P7 forbids it explicitly. The gates are what make the final
+> manuscript's evidence chain auditable back to a literature record.
+
+---
+
 ### 2.5 — Integration Register (Q2)
 
 **Primary literature library**
@@ -992,6 +1027,7 @@ When anything fails:
 | 2026-08-19 | Early reachability probe | §2.6 — Zotero + 4 discovery APIs unreachable from remote container; Consensus + WebSearch green | n/a |
 | 2026-08-19 | Blueprint Q3 answered | §2.8 source-of-truth model; `/state/` defined; BR-9..BR-16; BR-5 scoped to intellectual output | n/a |
 | 2026-08-19 | Blueprint Q4 answered | §2.9 four payloads/paths/formats; §2.10 open items O1–O3; BR-17..BR-20 | n/a |
+| 2026-08-19 | Research lifecycle specified | §2.4b nine stages + gating; BR-23, BR-24 | n/a |
 | 2026-08-19 | **G0 CLOSED** — Data Schema confirmed | `/execution/` unlocked | n/a |
 | 2026-08-19 | Phase A + L build | 3 SOPs, 5 probes, coverage tool, registry validator, `/state/` initialized; 30 tests pass; probes report 5/5 egress-blocked | SOP-000/001/002 |
 | 2026-08-19 | Blueprint Q5 answered | §3 rebuilt — non-overridable verification hard stop (§3.0), 15 prohibitions P1–P15, tone/uncertainty/verbosity, refusal policy | n/a |
