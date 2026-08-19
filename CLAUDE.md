@@ -503,15 +503,41 @@ approves → *then* ask whether to save the finalized DOCX to the repository. (B
 
 ---
 
-### 2.10 — ⚠ Open payload questions (raised 2026-08-19, not yet ruled)
+### 2.10 — Payload rulings (O1–O3, answered 2026-08-19)
 
-These follow from Q4 but were not settled by it. **Do not resolve by assumption.**
-
-| # | Question | Why it matters |
+| # | Question | ✅ Ruling |
 |---|---|---|
-| **O1** | Does "saved" mean *written to the working tree*, or *committed and pushed*? | The container is **ephemeral**. A file written but not committed is destroyed when the session ends. For the unattended digest run this is decisive: without a commit + push, a scheduled digest produces nothing that survives. It also affects BUILD notes — incremental per-stage writing implies working-tree writes during a session, with the commit as a separate act. |
-| **O2** | Which timezone is "Monday morning / Saturday morning", and at what hour? | A cron expression cannot be written without it. |
-| **O3** | Which branch do unattended runs push to? | An automated push to a default branch behaves very differently from one to a dedicated branch, and BR-5/BR-6 both bear on it. |
+| **O1** | Does "saved" mean written, or committed and pushed? | **Written, committed, AND pushed.** A payload is not landed until it is pushed. This is invariant 7 made concrete for an ephemeral runtime. |
+| **O2** | Timezone for "Monday / Saturday morning"? | **US Eastern.** ⚠ Hour not specified — see assumption below. |
+| **O3** | Which branch do unattended runs push to? | **A dedicated branch**, never the default branch. Name pending confirmation — see below. |
+
+#### O1 — consequence for auto-saved payloads
+Screening reports (§2.9 #2) and monitoring digests (§2.9 #4) run to completion only
+when the file is committed and pushed. A scheduled run that writes without pushing has
+**failed**, not partially succeeded, because the container is destroyed afterwards.
+Any Layer-T tool producing these must treat the push as part of the operation and
+report failure if it does not land.
+
+> BUILD notes and positioning briefs are unaffected: they remain approval-gated
+> (BR-19), so a working-tree write during a session is correct for them and the
+> commit is a separate, user-approved act.
+
+#### O2 — ⚠ assumption on file, adjustable
+Timezone is US Eastern. **Hour was not specified; 07:00 ET is assumed** so the digest
+is waiting before the working day starts. Change on request.
+
+> ⚠ **Daylight-saving caveat.** Cron runs in UTC and does not shift with US DST.
+> 07:00 ET = **11:00 UTC during EDT** (mid-March → early November) and **12:00 UTC
+> during EST**. A single fixed UTC schedule therefore drifts by one hour across the
+> changeover. Current expression `0 11 * * 1,6` is correct for EDT (in effect now);
+> under EST it fires at 06:00 ET. Phase T must either accept the drift or adjust the
+> expression twice a year.
+
+#### O3 — dedicated branch
+Unattended runs push to a dedicated branch, never the default branch, so scheduled
+machine output never lands unreviewed on the user's main line of work. **Proposed
+name: `automation/scheduled-output`** — covers both auto-saved payloads. To be
+confirmed in Phase T.
 
 ---
 
@@ -535,7 +561,7 @@ ship with a verify command (invariant 8).
 ### T — Trigger
 | Trigger | Type | Schedule / Event | Entry point | Status |
 |---|---|---|---|---|
-| Monitoring digest | recurring | **Mon + Sat morning** (timezone/hour pending — O2) | not built | not configured |
+| Monitoring digest | recurring | **Mon + Sat 07:00 US Eastern** (`0 11 * * 1,6` UTC under EDT — see O2 DST caveat) | not built | not configured |
 | Screening batch | on demand | user-initiated | not built | not configured |
 | Positioning brief | on demand | user-initiated | not built | not configured |
 | BUILD session | interactive | user-initiated | not built | not configured |
@@ -683,4 +709,5 @@ When anything fails:
 | 2026-08-19 | Early reachability probe | §2.6 — Zotero + 4 discovery APIs unreachable from remote container; Consensus + WebSearch green | n/a |
 | 2026-08-19 | Blueprint Q3 answered | §2.8 source-of-truth model; `/state/` defined; BR-9..BR-16; BR-5 scoped to intellectual output | n/a |
 | 2026-08-19 | Blueprint Q4 answered | §2.9 four payloads/paths/formats; §2.10 open items O1–O3; BR-17..BR-20 | n/a |
+| 2026-08-19 | O1–O3 ruled | saved = write+commit+push; US Eastern, 07:00 assumed; dedicated branch for unattended runs; BR-21, BR-22 | n/a |
 | 2026-08-19 | Runtime target decided | ☁ cloud environment (D-015); Zotero Web API activated as the user's stated fallback; §2.7 prerequisites raised | n/a |

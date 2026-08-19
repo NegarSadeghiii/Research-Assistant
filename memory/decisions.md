@@ -266,3 +266,33 @@ sharpest: the container is ephemeral, so an unattended digest that writes withou
 committing produces nothing that survives the session — the payload would never land,
 violating invariant 7. Guessing any of the three would embed an assumption into the
 Trigger design that is expensive to unwind later. Invariant 10 applies.
+
+### D-027 — "Saved automatically" means written, committed and pushed (O1, BR-21)
+**Date:** 2026-08-19
+**Decision:** For screening reports and monitoring digests, the operation is not
+complete until the file is committed and pushed. A run that writes without pushing
+has failed and must report failure.
+**Reason:** User ruling. On the cloud runtime chosen in D-015 the container is
+destroyed after the session, so an uncommitted file does not exist in any durable
+sense. This makes invariant 7 ("complete = payload landed") mechanically checkable:
+the tool's success condition is the push, not the file write.
+
+### D-028 — Digest schedule: Mon + Sat, 07:00 US Eastern (O2)
+**Date:** 2026-08-19
+**Decision:** Timezone US Eastern, per the user. Hour not specified by the user;
+**07:00 assumed** and flagged as adjustable.
+**Reason:** User ruling on timezone. The hour is an assumption chosen so the digest is
+waiting before the working day, recorded openly rather than silently.
+**Caveat carried into Phase T:** cron runs in UTC and does not observe US DST.
+07:00 ET is 11:00 UTC under EDT and 12:00 UTC under EST, so one fixed expression
+drifts an hour across the changeover. Phase T must accept the drift or adjust twice
+yearly. Recorded now so it is not discovered as a bug later.
+
+### D-029 — Unattended runs push to a dedicated branch (O3, BR-22)
+**Date:** 2026-08-19
+**Decision:** Scheduled output pushes to a dedicated branch, never the default branch.
+Proposed name `automation/scheduled-output`, to be confirmed in Phase T.
+**Reason:** User ruling. It keeps machine-generated output off the user's main line
+until reviewed, and it means an automation bug that produces a bad digest can be
+discarded by deleting a branch. Consistent with BR-6's instinct: automation does not
+get to assume the default branch.

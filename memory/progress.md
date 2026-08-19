@@ -160,3 +160,21 @@ fields all come from Q3. The output side waits on Q4.
 open items. Both halves of the schema can be drafted once Q5 lands.
 
 **Next action:** Blueprint Q5 (Behavioral Rules) — the final discovery question.
+
+## 2026-08-19 — O1–O3 ruled
+
+**Done**
+- O1: "saved automatically" = written + committed + pushed. Recorded as BR-21;
+  §2.10 now states that a scheduled run failing to push has failed outright.
+- O2: timezone US Eastern. Hour not given — 07:00 ET assumed and flagged.
+  DST caveat documented: `0 11 * * 1,6` UTC is correct under EDT only.
+- O3: dedicated branch for unattended runs, never the default branch. Recorded as
+  BR-22; name `automation/scheduled-output` proposed for Phase T confirmation.
+- Decisions D-027..D-029; §2.10 converted from open questions to rulings.
+
+**Errors hit:** none.
+
+**Result:** Q4's follow-ups are closed. **Q5 remains unanswered** — it is the last
+item blocking G0 along with the Data Schema.
+
+**Next action:** Q5 (Behavioral Rules), then draft the Data Schema for approval.
