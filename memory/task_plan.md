@@ -1,6 +1,7 @@
 # Task Plan — Research-Assistant
 
-**Status:** 🔴 HALTED at Protocol 0 → Phase B (Blueprint) discovery.
+**Status:** 🔴 HALTED in Phase B (Blueprint) discovery. Q1 answered, Q2–Q5 open.
+**Build target:** Stage 1 — Literature Intelligence (see CLAUDE.md §2.4).
 **Blueprint approved:** NO — logic is forbidden in `/execution/` until this flips to YES.
 
 ---
@@ -9,7 +10,7 @@
 - [x] Project memory initialized (`/memory/`)
 - [x] CLAUDE.md created as Project Constitution
 - [x] Directory scaffold created (`/architecture/`, `/execution/`, `/.tmp/`)
-- [ ] **Q1 — North Star:** the singular outcome that means we won
+- [x] **Q1 — North Star:** ✅ answered — recorded verbatim in CLAUDE.md §2.1–2.3
 - [ ] **Q2 — Integrations:** external services + credential readiness
 - [ ] **Q3 — Source of Truth:** where the primary data lives
 - [ ] **Q4 — Delivery Payload:** how and where the final result lands
@@ -43,5 +44,22 @@
 
 ---
 
+## Stage 1 — Literature Intelligence: sub-capabilities
+Scoped from Q1. Not planned in detail until G0 closes.
+
+| ID | Capability | Depends on |
+|---|---|---|
+| 1a | Zotero-backed screening / classification / prioritization | Q2, Q3 |
+| 1b | BUILD-guided deep reading (no-summary discipline) | Q5 |
+| 1c | Positioning + adversarial novelty assessment | Q2, Q4 |
+| 1d | New-publication monitoring digest | Q2, Q4, Phase T |
+
 ## Open Questions Blocking Progress
-1. All five Blueprint discovery questions (Q1–Q5) — unanswered.
+1. **Q2 — Integrations:** Zotero access method + credentials; discovery sources
+   beyond the library; where BUILD sessions and drafts live; GitHub repos (Stage 3).
+2. **Q3 — Source of Truth:** is Zotero authoritative, and where do the user's own
+   ideas / methodology / drafts / research questions live?
+3. **Q4 — Delivery Payload:** shape and destination of screening reports,
+   positioning briefs, and the monitoring digest.
+4. **Q5 — Behavioral Rules:** BUILD session boundary, challenge intensity, refusal
+   triggers, evidence-citation format.

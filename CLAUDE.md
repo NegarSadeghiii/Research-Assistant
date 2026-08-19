@@ -6,7 +6,7 @@
 
 **Build protocol:** B.L.A.S.T. (Blueprint → Link → Architect → Stylize → Trigger)
 **Build layers:** A.N.T. (Architecture → Navigation → Tools)
-**Current state:** 🔴 **HALTED — Protocol 0.** Awaiting Blueprint discovery answers.
+**Current state:** 🔴 **HALTED — Phase B.** Q1 answered. Q2–Q5 open.
 
 ---
 
@@ -14,7 +14,7 @@
 
 | Gate | Condition to pass | Status |
 |---|---|---|
-| **G0 — Blueprint** | Q1–Q5 answered, Data Schema below filled, user approves | ❌ OPEN |
+| **G0 — Blueprint** | Q1–Q5 answered, Data Schema below filled, user approves | ❌ OPEN — 1/5 answered |
 | **G1 — Link** | Every credential probed green, logged in `progress.md` | ⏸ blocked by G0 |
 | **G2 — Stylize** | Every output has a verify command; user signs off | ⏸ blocked by G1 |
 | **G3 — Trigger** | Firing mechanism live and documented below | ⏸ blocked by G2 |
@@ -26,17 +26,17 @@
 ## 1. Data Schema (Data-First Rule)
 
 > ⛔ **NOT YET DEFINED.** Coding begins only once the Payload shape is confirmed.
-> This section is filled from the answers to Q3 (Source of Truth) and Q4 (Delivery
-> Payload), and must be confirmed by the user before any script is written.
+> Filled from Q3 (Source of Truth) and Q4 (Delivery Payload), and confirmed by the
+> user before any script is written.
 
 ### Input shape
 ```json
-{ "_status": "undefined — pending Blueprint Q1–Q5" }
+{ "_status": "undefined — pending Blueprint Q3–Q4" }
 ```
 
 ### Output shape (the Payload)
 ```json
-{ "_status": "undefined — pending Blueprint Q1–Q5" }
+{ "_status": "undefined — pending Blueprint Q3–Q4" }
 ```
 
 ### Field contract
@@ -51,11 +51,160 @@
 ### B — Blueprint
 | # | Question | Answer |
 |---|---|---|
-| 1 | **North Star** — the singular outcome that means we won | *unanswered* |
+| 1 | **North Star** | ✅ **ANSWERED** — see §2.1. End-to-end research assistant: literature → defensible methodology → reproducible computation → validated results → publication-quality manuscript. **Build order starts with Literature Intelligence.** |
 | 2 | **Integrations** — external services + credential readiness | *unanswered* |
 | 3 | **Source of Truth** — where the primary data lives | *unanswered* |
 | 4 | **Delivery Payload** — how and where the result lands | *unanswered* |
 | 5 | **Behavioral Rules** — tone, must-dos, must-nots, refusals | *unanswered* |
+
+---
+
+### 2.1 — North Star (verbatim, Q1)
+
+> **Long-term arc:** an end-to-end research assistant that helps me move from
+> literature and research ideas to defensible methodology, reproducible
+> computational work, validated results, and ultimately a publication-quality
+> manuscript.
+>
+> **The first capability to build is the literature intelligence system.**
+
+#### Working material
+The assistant works with the papers in the **connected Zotero library**, together
+with research ideas, methodology, drafts, and research questions.
+
+#### Literature intelligence must determine
+- which papers are genuinely relevant and worth my time;
+- which papers are foundational, closest to my work, or important methodological precedents;
+- which papers may challenge or threaten the novelty of my ideas;
+- whether an idea or methodological choice I am considering has already been studied;
+- where my work overlaps with or differs from the existing literature;
+- what genuine research gaps may remain;
+- which claims or methodological choices need literature support;
+- which papers I should examine or cite;
+- what assumptions I may be making that the literature challenges.
+
+The goal is to **stop manually hunting and screening large numbers of papers**, and
+to spend deep-reading time only on papers that actually matter.
+
+#### BUILD deep reading
+For papers selected for deep reading, the **BUILD active-reading workflow** applies.
+The assistant must **not** replace intellectual work by summarizing those papers. It
+guides, makes the user identify and articulate the ideas themselves, challenges
+interpretation, and connects each paper to the user's own research.
+
+#### Screening is NOT BUILD — hard distinction
+Before a paper is selected for deep reading, the assistant **may** inspect titles,
+abstracts, metadata, keywords, introductions, conclusions, and any other sections
+needed to screen, classify, compare, and prioritize.
+**The no-summary rule applies only when a BUILD session is explicitly begun.**
+
+#### Monitoring digest
+Eventually: monitor newly published research in areas of interest and deliver a
+recurring, **highly filtered** digest. Each recommended paper must carry an
+explanation of *why it may matter to current research*. Miss nothing important;
+surface nothing irrelevant.
+
+#### Positioning against the literature
+When the user proposes an idea, model, assumption, or methodological choice, the
+assistant actively hunts for the **strongest related and competing work — including
+papers using different terminology for similar ideas** — and determines what has
+already been done, what is actually different, who must be cited, and whether the
+proposed contribution is strong enough.
+
+It **challenges rather than validates**. It continually asks:
+- Where should I change my perspective?
+- Is the approach I have chosen actually the right way to solve this problem?
+- What am I taking for granted that I should not be?
+- What is the strongest existing paper that could undermine my novelty claim?
+
+> ⛔ **Novelty rule:** never declare something novel or a research gap merely because
+> no identical paper was found. Novelty assessment must consider **conceptual,
+> methodological, contextual, and application-level** similarity across **adjacent**
+> literatures.
+
+#### Computational stage (later)
+After positioning and methodology defense: translate approved methodology into
+reproducible code, work with relevant GitHub repositories, design computational
+experiments, extract and analyze results, validate them, identify unexpected
+behavior, and connect findings back to the research question and literature.
+
+> The user must understand and be able to defend **every** modeling and computational
+> decision. The assistant explains formulations, assumptions, algorithms, code logic,
+> experimental choices, and interpretations **before or while** implementing — never
+> delivering finished code the user cannot explain.
+
+#### Manuscript stage (final, separate)
+Manuscript development is a **separate final research stage, not automatic prose
+generation from raw results**. Before drafting, the system verifies that research
+question, claimed contribution, literature positioning, methodology, experiments,
+results, interpretation, and limitations are **internally consistent and supported
+by evidence**.
+
+Writing standard: the clarity, precision, scientific storytelling, evidence
+discipline, and narrative coherence of top-tier publications such as *Nature*,
+combined with the methodological rigor expected by leading **operations research**
+journals. Structure, terminology, contribution framing, and formatting follow the
+**target journal's** conventions rather than imitating *Nature*.
+
+To be handled by a specialized role/subagent using approved research decisions,
+literature findings, methodology, code outputs, experiments, figures, tables, and
+validated results as its evidence base.
+
+---
+
+### 2.2 — Definition of Success (Q1)
+
+- [ ] I no longer manually hunt for and screen large numbers of papers.
+- [ ] I do not miss important new papers in my research area.
+- [ ] I spend my deep-reading time on papers that are genuinely relevant.
+- [ ] When I develop an idea or methodology, I can quickly understand how it is positioned relative to the literature.
+- [ ] I know what has already been done, what remains genuinely different, who I should cite, and what I need to investigate next.
+- [ ] Important assumptions and methodological choices are challenged before they become embedded in my models.
+- [ ] My computational experiments are reproducible and traceable to explicit research decisions.
+- [ ] Results are critically validated before conclusions are drawn.
+- [ ] The final manuscript is built from an auditable chain of literature evidence, research decisions, methodology, computational results, and interpretation.
+
+### 2.3 — Definition of Failure (Q1) — treat as blocking defects
+
+| # | Failure mode |
+|---|---|
+| F1 | Misses key papers |
+| F2 | Recommends large numbers of irrelevant papers |
+| F3 | **Invents citations or bibliographic information** |
+| F4 | **Makes claims about papers it has not actually inspected** |
+| F5 | Treats keyword similarity as evidence of true relevance |
+| F6 | Declares a research gap or novelty without sufficient evidence |
+| F7 | Summarizes papers during BUILD sessions instead of making the user do the work |
+| F8 | Fails to distinguish what a paper explicitly states from what the assistant is inferring |
+| F9 | Agrees with research ideas without sufficiently challenging them |
+| F10 | Introduces modeling assumptions or code logic without making them explicit |
+| F11 | Produces computational results that cannot be reproduced or traced |
+| F12 | Drafts polished manuscript text before the underlying science is sufficiently validated |
+
+> These are not style preferences. Each failure mode must map to an explicit guard in
+> an `/architecture/` SOP and, where mechanizable, a check in `/execution/`.
+
+---
+
+### 2.4 — Capability Roadmap
+
+Derived from Q1. **Only Stage 1 is in scope for the current build.**
+
+| Stage | Capability | Status |
+|---|---|---|
+| **1** | **Literature Intelligence** | 🟡 **CURRENT BUILD TARGET** |
+| 1a | Zotero-backed screening, classification, prioritization | pending Blueprint |
+| 1b | BUILD-guided deep reading (no-summary discipline) | pending Blueprint |
+| 1c | Positioning + adversarial novelty assessment | pending Blueprint |
+| 1d | New-publication monitoring digest | pending Blueprint |
+| **2** | Methodology development & defense | ⏸ future |
+| **3** | Reproducible computational research (GitHub, experiments, validation) | ⏸ future |
+| **4** | Manuscript development (specialized subagent) | ⏸ future |
+
+Stages 2–4 are recorded so the architecture does not foreclose them. **No code is
+written for them until Stage 1 has landed its payload.**
+
+---
 
 ### L — Link
 Verified connections: *none yet.* See `/memory/progress.md` for the probe table.
@@ -75,13 +224,25 @@ Payload formatting rules: *pending Q4.*
 ### T — Trigger
 | Trigger | Type | Schedule / Event | Entry point | Status |
 |---|---|---|---|---|
-| — | — | — | — | not configured |
+| Monitoring digest | recurring | pending Q4 | not built | not configured |
 
 ---
 
 ## 3. Behavioral Rules
 
-*Pending Q5.* Until then, the operating principles below apply.
+*Formally set by Q5.* These four are already binding, stated explicitly in Q1:
+
+- **BR-1 — Screening ≠ BUILD.** Free inspection of titles, abstracts, metadata,
+  keywords, intros, conclusions and other sections during screening. The no-summary
+  rule activates **only** when the user explicitly begins a BUILD session.
+- **BR-2 — Evidence discipline.** Never claim anything about a paper that was not
+  actually inspected. Always separate *what the paper states* from *what the
+  assistant infers*.
+- **BR-3 — No manufactured novelty.** Absence of an identical paper is never
+  evidence of a gap. Assess conceptual, methodological, contextual, and
+  application-level similarity across adjacent literatures.
+- **BR-4 — Challenge, don't validate.** Actively seek the strongest work that could
+  undermine the user's claim. Agreement without challenge is a defect (F9).
 
 ---
 
@@ -104,6 +265,9 @@ These hold regardless of what the Blueprint decides:
    verify command.
 9. **Surgical changes** — touch only what was asked; no speculative abstractions.
 10. **Never guess business logic** — ask instead.
+11. **Provenance or silence** — every assertion about a paper carries a traceable
+    pointer to the inspected source. Unverifiable bibliographic data is never
+    emitted. (Guards F3, F4, F8.)
 
 ---
 
@@ -142,3 +306,4 @@ When anything fails:
 | Date | Event | Action taken | SOP updated |
 |---|---|---|---|
 | 2026-08-19 | Project initialized (Protocol 0) | Scaffold + memory + constitution | n/a |
+| 2026-08-19 | Blueprint Q1 answered | North Star, success/failure criteria, capability roadmap recorded | n/a |
