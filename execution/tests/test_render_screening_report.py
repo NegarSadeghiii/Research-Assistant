@@ -33,8 +33,10 @@ print("\n  Screening report renderer\n")
 print("  Structure")
 check("renders a complete HTML document", page.startswith("<!doctype html>") and page.rstrip().endswith("</html>"))
 check("declares UTF-8", 'charset="utf-8"' in page)
-check("is self-contained — no external asset fetches",
-      "http://" not in page.replace("http://www.w3.org", "") and "<script" not in page)
+check("is self-contained — no external assets and no network fetch",
+      "src=" not in page and "fetch(" not in page
+      and "XMLHttpRequest" not in page and "@import" not in page)
+check("inline script only, never an external one", "<script>" in page and "<script " not in page)
 check("defines colours on bare :root, not only in a media query",
       page.index(":root{") < page.index("@media(prefers-color-scheme:dark)"))
 
@@ -77,6 +79,25 @@ evil["screening"]["reason"] = 'a & b < c > d "quoted"'
 out = render([evil], "2026-08-19T00:00:00+00:00")
 check("a script tag in a title is escaped", "<script>alert" not in out and "&lt;script&gt;" in out)
 check("ampersands and angle brackets in a reason are escaped", "a &amp; b &lt; c &gt; d" in out)
+
+print("\n  View controls are present in the markup")
+check("group-by selector rendered", 'id="groupBy"' in page)
+check("search box rendered", 'id="q"' in page)
+check("filters cover verdict, category, evidence and citability",
+      all(f'data-f="{k}"' in page for k in ("verdict", "cat", "evidence", "citable")))
+check("every record carries its filter attributes",
+      page.count("data-verdict=") == len(records)
+      and page.count("data-evidence=") == len(records)
+      and page.count("data-citable=") == len(records))
+check("grouping key is the FIRST category, filtering uses all (SOP-004 6.2)",
+      'data-cat-primary=' in page and 'data-cats=' in page)
+check("print CSS reveals filtered-out records",
+      ".rec[hidden],h2[hidden]{display:block !important}" in page)
+check("controls are hidden in print", ".controls{display:none}" in page)
+check("filter checkboxes stay focusable for keyboard users",
+      ".tog input{display:none}" not in page and "opacity:0" in page)
+check("footer states that filters do not remove records",
+      "every screened record is present in this file" in page)
 
 print("\n  Edge cases")
 empty = render([], "2026-08-19T00:00:00+00:00")

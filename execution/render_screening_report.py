@@ -100,8 +100,24 @@ def render_record(record: dict) -> str:
     chips = "".join(f'<span class="chip {"body" if i in BODY_EVIDENCE else ""}">{esc(i)}</span>'
                     for i in inspected) or '<span class="chip none">none</span>'
 
+    primary_cat = (screening.get("categories") or ["uncategorised"])[0]
+    all_cats = " ".join(screening.get("categories") or ["uncategorised"])
+    haystack = " ".join(filter(None, [
+        bib.get("title") or "", full_authors, str(bib.get("year") or ""),
+        bib.get("venue") or "", reason or "", doi or "",
+        # Categories are rendered as chips on the card, so a reader who can see a term
+        # expects search to find it. Anything visible is searchable.
+        " ".join(screening.get("categories") or ""),
+        prov.get("discovered_via") or ""])).lower()
+
     return f"""
-    <article class="rec {esc(verdict)}">
+    <article class="rec {esc(verdict)}"
+             data-verdict="{esc(verdict)}"
+             data-cat-primary="{esc(primary_cat)}"
+             data-cats="{esc(all_cats)}"
+             data-evidence="{esc(ev_cls)}"
+             data-citable="{'yes' if citable else 'no'}"
+             data-text="{esc(haystack)}">
       <header>
         <h3 title="{esc(full_authors)}">{esc(bib.get('title') or '—')}</h3>
         <p class="meta">{esc(visible_authors)} · {esc(bib.get('year') or '—')} ·
@@ -172,7 +188,134 @@ padding:.5rem .7rem;margin:0 0 .7rem;font-size:.85rem}
 footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--line);
 color:var(--muted);font-size:.8rem}
 a{color:inherit}
-@media print{body{padding:0}.rec{break-inside:avoid}}
+.controls{border:1px solid var(--line);border-radius:.5rem;padding:.85rem 1rem;margin-bottom:1.5rem;
+background:var(--card);display:grid;gap:.75rem}
+.ctl-row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.ctl-row > label.lead{font-size:.75rem;color:var(--muted);text-transform:uppercase;
+letter-spacing:.04em;min-width:5.5rem}
+.controls select,.controls input[type=search]{font:inherit;font-size:.85rem;padding:.3rem .5rem;
+border:1px solid var(--line);border-radius:.35rem;background:var(--bg);color:var(--fg)}
+.controls input[type=search]{flex:1;min-width:12rem}
+.tog{font-size:.78rem;border:1px solid var(--line);border-radius:1rem;padding:.2rem .6rem;
+cursor:pointer;user-select:none;color:var(--muted);background:var(--bg)}
+.tog input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.tog:has(input:focus-visible){outline:2px solid var(--fg);outline-offset:2px}
+.tog.on{border-color:var(--fg);color:var(--fg);font-weight:600}
+.showing{font-size:.8rem;color:var(--muted)}
+.showing.filtered{color:var(--warn);font-weight:600}
+.rec[hidden],h2[hidden]{display:none}
+.empty-filter{border:1px dashed var(--line);border-radius:.5rem;padding:1.5rem;
+text-align:center;color:var(--muted)}
+@media print{body{padding:0}.rec{break-inside:avoid}
+.controls{display:none}
+.rec[hidden],h2[hidden]{display:block !important}
+.print-note{display:block !important}}
+.print-note{display:none;border:1px solid var(--line);border-radius:.4rem;padding:.6rem;
+margin-bottom:1rem;font-size:.85rem}
+"""
+
+
+JS = """
+// View controls only. Every record is already in this document; nothing here changes
+// what the file contains (SOP-004 section 6.1).
+(function () {
+  var recs = [].slice.call(document.querySelectorAll('.rec'));
+  if (!recs.length) return;
+  var groupBy = document.getElementById('groupBy');
+  var q = document.getElementById('q');
+  var showing = document.getElementById('showing');
+  var emptyBox = document.getElementById('emptyFilter');
+  var printNote = document.getElementById('printNote');
+  var container = emptyBox.parentNode;
+
+  // The document's own order, captured before anything is moved, so switching group
+  // modes can always restore it exactly.
+  var initial = [].slice.call(
+    container.querySelectorAll('h2[data-group], .rec'));
+
+  var LABEL = {relevant:'Relevant', uncertain:'Uncertain', irrelevant:'Irrelevant',
+               unscreened:'Not screened', full:'Full text', meta:'Metadata only',
+               none:'Nothing inspected', uncategorised:'Uncategorised'};
+  function pretty(k){ return LABEL[k] || k.replace(/_/g,' '); }
+
+  function checked(kind) {
+    var out = {};
+    [].forEach.call(document.querySelectorAll('input[data-f="' + kind + '"]'), function (b) {
+      if (b.checked) out[b.value] = true;
+    });
+    return out;
+  }
+
+  function visible(rec, f) {
+    if (!f.verdict[rec.dataset.verdict]) return false;
+    if (!f.evidence[rec.dataset.evidence]) return false;
+    if (!f.citable[rec.dataset.citable]) return false;
+    // Filtering by category matches ANY category the record carries, unlike grouping,
+    // which uses only the first (SOP-004 section 6.2).
+    var cats = (rec.dataset.cats || 'uncategorised').split(' ');
+    if (!cats.some(function (k) { return f.cat[k]; })) return false;
+    if (f.term && rec.dataset.text.indexOf(f.term) === -1) return false;
+    return true;
+  }
+
+  function apply() {
+    var f = {verdict: checked('verdict'), cat: checked('cat'),
+             evidence: checked('evidence'), citable: checked('citable'),
+             term: (q.value || '').trim().toLowerCase()};
+    var shown = recs.filter(function (r) { return visible(r, f); });
+
+    [].forEach.call(container.querySelectorAll('h2.dyn'), function (h) { h.remove(); });
+    // Restore the document's own order first; every mode starts from a known state.
+    initial.forEach(function (n) { container.insertBefore(n, emptyBox); });
+
+    recs.forEach(function (r) { r.hidden = shown.indexOf(r) === -1; });
+
+    var mode = groupBy.value;
+    [].forEach.call(container.querySelectorAll('h2[data-group]'), function (h) {
+      var key = h.dataset.group.split(':')[1];
+      h.hidden = mode !== 'verdict' ||
+                 !shown.some(function (r) { return r.dataset.verdict === key; });
+    });
+
+    if (mode === 'cat-primary' || mode === 'evidence') {
+      var key = mode === 'cat-primary' ? 'catPrimary' : 'evidence';
+      var groups = {};
+      shown.forEach(function (r) {
+        var g = r.dataset[key] || 'uncategorised';
+        (groups[g] = groups[g] || []).push(r);
+      });
+      Object.keys(groups).sort().forEach(function (g) {
+        var h = document.createElement('h2');
+        h.className = 'dyn';
+        h.innerHTML = pretty(g) + ' <span class="count">(' + groups[g].length + ')</span>';
+        container.insertBefore(h, emptyBox);
+        groups[g].forEach(function (m) { container.insertBefore(m, emptyBox); });
+      });
+    }
+
+    emptyBox.hidden = shown.length !== 0;
+    var filtered = shown.length !== recs.length;
+    showing.textContent = filtered
+      ? 'showing ' + shown.length + ' of ' + recs.length
+      : recs.length + ' records';
+    showing.className = filtered ? 'showing filtered' : 'showing';
+    // A printed copy must never look like a smaller batch than was screened.
+    printNote.textContent = filtered
+      ? 'A filter was active on screen (' + shown.length + ' of ' + recs.length +
+        ' shown). This printed copy contains every screened record.'
+      : '';
+  }
+
+  [].forEach.call(document.querySelectorAll('.controls input[type=checkbox]'), function (b) {
+    b.addEventListener('change', function () {
+      b.parentNode.classList.toggle('on', b.checked);
+      apply();
+    });
+  });
+  groupBy.addEventListener('change', apply);
+  q.addEventListener('input', apply);
+  apply();
+})();
 """
 
 
@@ -200,14 +343,58 @@ def render(records: list[dict], generated_at: str, anchor: str | None = None) ->
         body = ('<div class="note"><strong>No papers screened in this batch.</strong> '
                 'A screening run that examined nothing is recorded rather than omitted '
                 '— unlike an empty digest, which produces no file at all (BR-18).</div>')
+        controls = ""
     else:
+        # Every record is rendered into the file, always. Grouping and filtering are
+        # view controls over this markup, never a filter on what is saved
+        # (SOP-004 section 6.1).
         body = ""
         for v in VERDICT_ORDER:
             if not buckets[v]:
                 continue
-            body += (f'<h2>{esc(VERDICT_LABEL[v])} '
+            body += (f'<h2 data-group="verdict:{esc(v)}">{esc(VERDICT_LABEL[v])} '
                      f'<span class="count">({len(buckets[v])})</span></h2>')
             body += "".join(render_record(r) for r in buckets[v])
+        body += ('<div class="empty-filter" id="emptyFilter" hidden>'
+                 'No records match the current filters. '
+                 'Every screened paper is still in this file — clear the filters to see them.'
+                 '</div>')
+
+        present_cats = sorted({c for r in records
+                               for c in ((r.get("screening") or {}).get("categories") or [])})
+        cat_toggles = "".join(
+            f'<label class="tog on"><input type="checkbox" data-f="cat" value="{esc(c)}" checked>'
+            f'{esc(c.replace("_", " "))}</label>' for c in present_cats)
+        verdict_toggles = "".join(
+            f'<label class="tog on"><input type="checkbox" data-f="verdict" value="{esc(v)}" checked>'
+            f'{esc(VERDICT_LABEL[v])}</label>' for v in VERDICT_ORDER if buckets[v])
+
+        controls = f"""
+<div class="controls">
+  <div class="ctl-row"><label class="lead" for="groupBy">Group by</label>
+    <select id="groupBy">
+      <option value="verdict">Verdict</option>
+      <option value="cat-primary">Category (first listed)</option>
+      <option value="evidence">Evidence strength</option>
+      <option value="none">No grouping</option>
+    </select>
+    <input type="search" id="q" placeholder="Search title, author, venue, reason, DOI…"
+           aria-label="Search records">
+    <span class="showing" id="showing"></span>
+  </div>
+  <div class="ctl-row"><span class="lead">Verdict</span>{verdict_toggles}</div>
+  <div class="ctl-row"><span class="lead">Category</span>{cat_toggles}
+    <label class="tog on"><input type="checkbox" data-f="cat" value="uncategorised" checked>uncategorised</label></div>
+  <div class="ctl-row"><span class="lead">Evidence</span>
+    <label class="tog on"><input type="checkbox" data-f="evidence" value="full" checked>full text</label>
+    <label class="tog on"><input type="checkbox" data-f="evidence" value="meta" checked>metadata only</label>
+    <label class="tog on"><input type="checkbox" data-f="evidence" value="none" checked>nothing inspected</label>
+    <span class="lead" style="min-width:auto;margin-left:.5rem">Citable</span>
+    <label class="tog on"><input type="checkbox" data-f="citable" value="yes" checked>as evidence</label>
+    <label class="tog on"><input type="checkbox" data-f="citable" value="no" checked>candidate only</label>
+  </div>
+</div>
+<div class="print-note" id="printNote"></div>"""
 
     anchor_line = (f"Screened against <code>{esc(anchor)}</code> · " if anchor else "")
 
@@ -219,6 +406,7 @@ def render(records: list[dict], generated_at: str, anchor: str | None = None) ->
 <h1>Screening report</h1>
 <p class="sub">{anchor_line}{len(records)} record(s) · generated {esc(generated_at)}</p>
 <div class="tallies">{tallies}</div>
+{controls}
 {body}
 <footer>
 Generated from <code>state/paper-registry.json</code>. Every statement on this page is a
@@ -226,8 +414,12 @@ registry field — this report computes no verdicts and adds no bibliographic de
 Irrelevant and uncertain papers are retained deliberately (BR-20): the rejection record
 is what explains a past decision and prevents re-screening. Records marked
 <em>candidate only</em> failed V5 or V6 and may not be cited as supporting evidence.
+Filters change only what is displayed — every screened record is present in this file,
+and printing reveals all of them.
 </footer>
-</div></body></html>"""
+</div>
+<script>{JS}</script>
+</body></html>"""
 
 
 def demo_records() -> list[dict]:

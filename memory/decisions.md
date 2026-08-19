@@ -461,3 +461,40 @@ Both are correct for their purpose, but 1637 would badly misstate the screening
 workload — a six-fold error in scale planning.
 **Action:** `probe_zotero`'s message should be amended to say "objects" rather than
 "items", or to report the top-level count, so the number is not misread later.
+
+### D-043 — Report interactivity is a view control, never a filter on the record
+**Date:** 2026-08-19
+**Decision:** The screening report carries inline JavaScript for grouping, filtering
+and search (user requirement). Three constraints bound it: every record is always in
+the file; a filtered view announces itself as `showing N of M`; and printing reveals
+everything with a note naming the filter that was active.
+**Reason:** The obvious implementation — render only the visible subset — would make
+the saved file depend on the viewing state. An archived report could then
+under-represent what was actually screened, which is BR-20's failure with a nicer
+interface. Filtering changes what is displayed; it never changes what the document
+contains.
+**Why the print rule matters specifically:** a PDF of a filtered report is the most
+likely artifact to end up attached to something else, detached from the tool that made
+it. Without the print rule it would be an incomplete record with no indication that it
+was incomplete.
+
+### D-044 — Grouping uses the first category; filtering matches any
+**Date:** 2026-08-19
+**Decision:** With multi-valued `screening.categories`, grouping places a record under
+its **first** category so one record yields exactly one card; filtering matches a
+record carrying the category **anywhere** in its list.
+**Reason:** Grouping by any-match would duplicate a paper across sections, and a
+duplicated paper in an audit record invites double-counting. The asymmetry is invisible
+until it surprises someone — grouping by `novelty_threat` will not show a paper whose
+categories are `["foundational", "novelty_threat"]`, but filtering by it will — so it is
+documented in SOP-004 §6.2 rather than left to be discovered.
+
+### D-045 — Filter checkboxes stay in the keyboard tab order
+**Date:** 2026-08-19
+**Decision:** The visually hidden checkboxes use `position:absolute; opacity:0` with a
+`:focus-visible` outline on the label, not `display:none`.
+**Reason:** Found by the browser tests, which could not click a control a keyboard user
+also could not reach. `display:none` removes an input from the tab order entirely, so
+the report's filters would have been unusable without a mouse. The test failure was a
+real accessibility defect, not a test problem — worth recording because the temptation
+was to force the click and move on.

@@ -34,7 +34,8 @@ authority — code obeys it, and a logic change updates it *before* the code.
 - **A screening-report renderer** that shows, per record, which sections were actually
   read — so a metadata-only verdict *looks* weaker than a full-text one without any
   disclaimer.
-- **70 passing tests.**
+- **112 passing tests**, including headless-browser tests that drive the report's
+  filters and confirm no record is ever removed from the file.
 
 ### What does not exist yet
 
@@ -104,7 +105,8 @@ python3 execution/validate_registry.py                     # validate the regist
 python3 execution/tests/test_validate_registry.py          # 21 tests
 python3 execution/tests/test_probe_classification.py       #  9 tests
 python3 execution/tests/test_env_loading.py                # 12 tests
-python3 execution/tests/test_render_screening_report.py    # 28 tests
+python3 execution/tests/test_render_screening_report.py    # 38 tests
+python3 execution/tests/test_report_interactivity.py       # 32 tests (headless Chromium)
 
 python3 execution/render_screening_report.py --demo --out .tmp/demo.html   # see a report
 ```

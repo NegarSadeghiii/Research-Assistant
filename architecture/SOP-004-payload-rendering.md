@@ -85,6 +85,39 @@ Per CLAUDE.md §3.2: screening is a table with one line of reasoning per paper; 
 is a few sentences per paper at most. Reports are self-contained single files — no
 external assets, no network fetches — so they open anywhere and survive archiving.
 
+### 6.1 — Interactivity is a view control, never a filter on the record
+
+The screening report carries inline JavaScript for grouping and filtering (user
+requirement, 2026-08-19). Three rules bound it:
+
+1. **Every record is in the file, always.** Filtering changes what is *displayed*,
+   never what the document contains. A reader with JavaScript disabled sees all
+   records — the unfiltered state is the default in the markup, not a state JS has to
+   restore.
+2. **A filtered view must announce itself.** The header shows `showing N of M`
+   whenever a filter is active. A report is an audit record; a reader must never
+   mistake a filtered view for the complete batch. This is the same instinct as BR-20 —
+   never let the output imply that fewer papers were screened than were.
+3. **Printing shows everything.** `@media print` reveals all records regardless of
+   filter state, and prints a line naming any filter that was active on screen. A PDF
+   of a filtered report would otherwise be an incomplete record with no indication.
+
+Inline JS only. No external scripts, no fetches — the file must still open from a USB
+stick in ten years.
+
+### 6.2 — Grouping vs filtering on multi-valued fields
+
+A record may carry several `screening.categories`. These are different operations:
+
+- **Grouping** by category places each record under its **first** category, so one
+  record produces exactly one card and the file never duplicates a paper.
+- **Filtering** by category shows every record carrying that category **anywhere** in
+  its list.
+
+Documented because the difference is invisible until it surprises someone: grouping by
+`novelty_threat` will not show a paper whose categories are
+`["foundational", "novelty_threat"]`, but filtering by it will.
+
 ## 7. Verify
 
 ```
@@ -98,6 +131,10 @@ unresolved conflict. If a state cannot be seen in the demo output, it is not cov
 
 ## 8. Lessons recorded
 
+- **2026-08-19** — Grouping and filtering were added at the user's request. The
+  temptation was to render only the visible subset; that would have made the saved file
+  depend on the viewing state, so an archived report could silently under-represent the
+  batch. Instead the file always contains everything and JS controls visibility only.
 - **2026-08-19** — Renderers hold no domain logic by design. The first version was
   going to compute per-tier tallies from raw fields; that would have made the report a
   second place where "how many are relevant" is decided, and the two could diverge.

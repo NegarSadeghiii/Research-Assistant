@@ -381,3 +381,39 @@ place where "how many are relevant" is decided — and two places can disagree.
 **Tests:** 21 validator + 9 classification + 12 env + 28 renderer = **70 passing**.
 
 **Next:** user sign-off on the report (G2 condition), then digest / brief / BUILD note.
+
+## 2026-08-19 — Screening report: grouping, filters, and browser tests
+
+**User feedback on the demo report:** grouping and filters needed; provenance block is
+useful, keep it; do not collapse irrelevant papers.
+
+**Done**
+- SOP-004 amended **before** the code (invariant 3) with §6.1 (interactivity is a view
+  control) and §6.2 (grouping vs filtering on multi-valued categories).
+- Added group-by (verdict / first category / evidence strength / none), filters for
+  verdict, category, evidence strength and citability, and full-text search.
+- Provenance block kept as-is; nothing collapsed.
+- `execution/tests/test_report_interactivity.py` — **32 headless-browser tests** that
+  drive the real controls rather than asserting on markup strings.
+
+**Three defects the browser tests caught that markup tests could not:**
+1. **Records appended past the footer.** Grouping used `container.appendChild`, which
+   moved cards after the footer. Now anchored to the empty-state node.
+2. **Group order not restored.** Switching from category grouping back to verdict left
+   records in category order under verdict headings. The document's original node
+   sequence is now captured at load and restored before every regroup.
+3. **Filter checkboxes were unreachable by keyboard.** `display:none` removed them from
+   the tab order; Playwright could not click what a keyboard user could not reach
+   either. Replaced with a focusable visually-hidden pattern (D-045).
+
+**One product gap found by a failing test:** searching `novelty` returned nothing even
+though `novelty_threat` was visible as a chip on the card. Categories and
+`discovered_via` are now in the search index — anything visible on the card is
+searchable.
+
+**One test that was wrong, not the code:** the metadata-only filter expectation was
+hardcoded to 4 when the demo contains 1 such record. Expectations are now derived from
+the rendered data.
+
+**Tests:** 12 env + 10 classification + 22 validator + 38 renderer markup + 32
+interactivity = **112 passing**.

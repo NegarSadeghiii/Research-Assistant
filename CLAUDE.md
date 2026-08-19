@@ -896,10 +896,11 @@ python3 execution/measure_zotero_coverage.py   # BR-8 / P4 coverage measurement
 | **T — Tools** | `/execution/` | atomic, deterministic, individually testable scripts |
 
 ### S — Stylize
-**Screening report built** — `execution/render_screening_report.py`, SOP-004, 28 tests.
-Renders evidence strength per record (D-041), retains rejections (BR-20), and marks
-non-citable records as candidates (§3.0). Digest, positioning brief and BUILD note
-skeleton remain.
+**Screening report built** — `execution/render_screening_report.py`, SOP-004, 70 tests
+(38 markup + 32 headless-browser). Renders evidence strength per record (D-041),
+retains rejections (BR-20), marks non-citable records as candidates (§3.0), and carries
+grouping and filtering as **view controls that never remove a record from the file**
+(SOP-004 §6.1). Digest, positioning brief and BUILD note skeleton remain.
 
 ```
 python3 execution/render_screening_report.py --demo --out .tmp/demo.html
