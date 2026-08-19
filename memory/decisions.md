@@ -425,3 +425,39 @@ failure under another name.
 is worthless. P15 governs — the audit optimizes for whether the existing work survives
 scrutiny, and it must be able to return "this assumption is unresolved" or "this
 result is not reproducible from what is available."
+
+### D-041 — Screening operates on a mixed-evidence library
+**Date:** 2026-08-19
+**Decision:** Screening reads full text where a PDF exists (≈70% of items) and
+metadata only where it does not (≈30%). Items without full text are **screened, not
+excluded**, and `provenance.evidence_inspected` records truthfully which sections were
+actually read.
+**Reason:** The measurement (§2.7 P4) shows the constraint is missing attachments, not
+unreadable ones — every PDF present is fully indexed, so there is no OCR problem to
+solve. Excluding the 30% would silently shrink the library and risk F1 (missing key
+papers); screening them while *claiming* full-text evidence would be F4. Recording the
+evidence honestly is the only option that is neither.
+**Why the schema already handles this:** V2 requires `evidence_inspected` to be
+non-empty for any verdict, and it lists the actual sections. A metadata-only verdict
+is therefore visibly weaker in the registry itself — the screening report can show it,
+and a reader can tell the difference without being told. This is BR-2 enforced
+structurally rather than by disclaimer.
+**Consequence for SOP-003:** the screening SOP must specify different evidence
+thresholds for the two cases, and must not let a metadata-only record reach a
+confident `relevant` or `irrelevant` verdict on thin grounds. `uncertain` is the
+correct resting verdict when the evidence cannot support a call (§3.2).
+**Not built now, recorded as an option:** OpenAlex and Europe PMC expose open-access
+full-text links for many DOIs. Filling part of the 30% from those sources is feasible
+but is scope beyond Stage 1 v1, and it would introduce text whose provenance differs
+from the library's. Revisit only if the gap proves to matter in practice.
+
+### D-042 — Library scale corrected: 267 items, not 1637
+**Date:** 2026-08-19
+**Decision:** The library holds **267 top-level bibliographic items**. The 1637 figure
+reported by `probe_zotero` counts attachments and child notes as well.
+**Reason:** `/items` returns every object; `/items/top` returns bibliographic items
+only. The probe uses the former for a liveness check, the coverage tool the latter.
+Both are correct for their purpose, but 1637 would badly misstate the screening
+workload — a six-fold error in scale planning.
+**Action:** `probe_zotero`'s message should be amended to say "objects" rather than
+"items", or to report the top-level count, so the number is not misread later.

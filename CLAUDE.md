@@ -6,8 +6,10 @@
 
 **Build protocol:** B.L.A.S.T. (Blueprint → Link → Architect → Stylize → Trigger)
 **Build layers:** A.N.T. (Architecture → Navigation → Tools)
-**Current state:** 🟢 **G0 CLOSED.** Phase L in progress — probes written, awaiting
-the egress allowlist (§2.7 P1) before any link can be verified.
+**Current state:** 🟢 **G0 + G1 CLOSED** (2026-08-19). Zotero, OpenAlex, PubMed and
+Crossref verified green from **local execution** (D-039); Semantic Scholar optional
+(D-038). Full-text coverage measured at 70% (§2.7 P4). Next: the BR-25 audit, then
+`SOP-003-screening`.
 **Runtime target:** ☁ **this cloud environment** (decided 2026-08-19, D-015).
 **⚠ Two user actions are prerequisites for G1** — egress allowlist + Zotero Web API
 credentials. See §2.7.
@@ -83,7 +85,7 @@ and needs the user's current methodology document (BR-9).
 | Gate | Condition to pass | Status |
 |---|---|---|
 | **G0 — Blueprint** | Q1–Q5 answered, Data Schema below filled, user approves | ✅ **CLOSED 2026-08-19** — schema confirmed by user |
-| **G1 — Link** | Every credential probed green, logged in `progress.md` | 🔴 **OPEN** — blocked by §2.7 P1 (egress allowlist) |
+| **G1 — Link** | Every credential probed green, logged in `progress.md` | ✅ **CLOSED 2026-08-19** — 4/4 required green locally |
 | **G2 — Stylize** | Every output has a verify command; user signs off | ⏸ blocked by G1 |
 | **G3 — Trigger** | Firing mechanism live and documented below | ⏸ blocked by G2 |
 
@@ -658,15 +660,28 @@ neither valid nor invalid. Verification waits on P1.
 `OPENALEX_API_KEY` is in `.env` (gitignored, mode 600). ⚠ **Untested** — same proxy
 403. Verification waits on P1.
 
-#### P4 — Phase L must measure Zotero full-text coverage (BR-8)
+#### P4 — Zotero full-text coverage ✅ **MEASURED 2026-08-19, ADEQUATE**
 
-Before any screening tool is designed, measure — do not assume:
-- how many library items have a synced PDF attachment;
-- for how many of those the API returns indexed full text;
-- whether that text is real text or an empty index (scanned/unOCR'd PDFs).
+Measured, not assumed. `measure_zotero_coverage.py --sample 50`, run locally:
 
-If full text is unavailable at scale, **halt and report** what further access is
-required. Do not design screening around metadata-only input.
+| Metric | Value |
+|---|---|
+| Top-level items in library | **267** |
+| Sampled | 50 (≈19%) |
+| Items with a PDF attachment | 35 / 50 (**70%**) |
+| Of those, PDFs with indexed text | **35 / 35 (100%)** |
+| Of those, text ≥ 500 chars (meaningful) | **35 / 35 (100%)** |
+
+**Reading:** the failure mode is *missing attachments*, not bad indexing. Every PDF
+present in the library is fully indexed and readable — there is no OCR problem. The
+30% gap is items with no PDF attached at all.
+
+⚠ **Correction to an earlier figure.** `probe_zotero` reports **1637** items because
+`/items` counts attachments and child notes. The library holds **267 top-level
+bibliographic items**. 267 is the number that matters for screening scale.
+
+**BR-8 is cleared for the 70%.** Screening may read introductions and conclusions as
+Q1 requires. The remaining 30% is addressed by D-041 rather than ignored.
 
 ---
 

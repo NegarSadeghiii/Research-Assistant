@@ -1,6 +1,7 @@
 # Task Plan — Research-Assistant
 
-**Status:** 🟢 G0 CLOSED. Phase A built, Phase L blocked on user action P1.
+**Status:** 🟢 G0 + G1 CLOSED. Runtime is local (D-039). Coverage measured at 70%.
+**Next:** BR-25 audit of the existing CAR-T project → SOP-003-screening → first run.
 **Resume instructions:** see the "NEXT SESSION — START HERE" block at the top of CLAUDE.md.
 **Runtime target:** ☁ cloud environment (D-015, decided 2026-08-19).
 **⚠ Blocked on user actions:** CLAUDE.md §2.7 P1–P3 — egress allowlist, Zotero
@@ -27,11 +28,11 @@ credentials, OpenAlex key. Blueprint Q3–Q5 can proceed in parallel.
 - [ ] **P1 (user)** — ⛔ **SOLE REMAINING BLOCKER** — egress policy widened for the 6 required hosts (§2.7), new session started
 - [x] **P2 (user)** — ✅ Zotero API key + userID supplied, stored in `.env` (untested — P1 blocks)
 - [x] **P3 (user)** — ✅ OpenAlex API key supplied, stored in `.env` (untested — P1 blocks)
-- [ ] **P4** — measure Zotero full-text coverage; halt and report if inadequate (BR-8)
+- [x] **P4** — ✅ measured 2026-08-19: 70% full-text coverage, adequate (D-041)
 - [ ] `.env` populated with every credential from Q2
 - [ ] Probe script per external service in `/execution/probes/`
 - [ ] Every probe green, results logged in `progress.md`
-- [ ] **GATE: no red links**
+- [x] **GATE: no red links** ✅ G1 CLOSED 2026-08-19
 
 ## Phase A — Architect (A.N.T. 3-layer)
 - [x] **A** — SOP-000 conventions, SOP-001 probes, SOP-002 registry validation

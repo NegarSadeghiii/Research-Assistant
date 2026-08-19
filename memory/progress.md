@@ -301,3 +301,47 @@ coverage measurement that gates the screening design.
 
 **Next action (user):** widen the egress policy, start a new session, re-create `.env`,
 run `run_all.py`.
+
+## 2026-08-19 — G1 CLOSED; coverage measured; three defects fixed
+
+**Runtime moved to local execution** (D-039) after the cloud environment's Custom
+network access would not persist across four attempts.
+
+**G1 — CLOSED.** From the user's machine:
+
+| Probe | Result |
+|---|---|
+| Zotero | ✅ green — key accepted, userID 17704981 |
+| OpenAlex | ✅ green — key accepted |
+| PubMed | ✅ green — 39 records |
+| Crossref | ✅ green — DOI resolved |
+| Semantic Scholar | ❌ 429 unauthenticated — downgraded to optional (D-038) |
+
+**Three defects found by first live contact, all mine, all fixed:**
+1. `measure_zotero_coverage` sent an unencoded `itemType=-attachment||note` → HTTP 400.
+   Fixed with `/items/top`.
+2. `load_env` did not strip quotes, so a valid `KEY="abc"` became `'"abc"'` and both
+   Zotero and OpenAlex rejected it. **This was the cause of the 403/401 that looked
+   like bad credentials.** Fixed; 12 regression tests added.
+3. `probe_crossref` asserted a false attribution for its test DOI in a comment. The
+   live probe resolved a different title. Removed.
+
+Repair loop closed: SOP-000 and SOP-001 updated with the preventing rules.
+
+**P4 — coverage measured (BR-8 satisfied):**
+
+```
+library_total (top-level): 267
+sampled: 50
+items_with_pdf: 35  (70%)
+pdfs_with_indexed_text: 35 / 35  (100%)
+pdfs_with_meaningful_text: 35 / 35  (100%)
+```
+
+The constraint is missing attachments, not bad indexing — every PDF present is fully
+readable. No OCR problem. Recorded as D-041 (mixed-evidence screening) and D-042
+(library is 267 items, not 1637).
+
+**Tests:** 21/21 validator, 9/9 classification, 12/12 env parsing.
+
+**Next:** BR-25 audit of the existing CAR-T project, then `SOP-003-screening`.
