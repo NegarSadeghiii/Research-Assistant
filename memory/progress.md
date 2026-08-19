@@ -203,3 +203,35 @@ Remaining: the user's approval of the schema. Still zero files in `/execution/`.
 
 **Next action:** present the schema for approval. On approval → G0 closes → Phase L,
 which is itself blocked on §2.7 P1–P3 (egress allowlist, Zotero key, OpenAlex key).
+
+## 2026-08-19 — P2 and P3 credentials received
+
+**Done**
+- Received Zotero userID + API key (P2) and OpenAlex API key (P3) from the user.
+- Wrote them to `.env`. **Verified protected before anything else:**
+  - `git check-ignore -v .env` → matched by `.gitignore:2`
+  - not tracked by git; absent from `git status`
+  - file mode set to `600`
+- Values are **not** recorded in this file, in `.env.example`, or in any commit.
+
+**Tests run:** live credential probes, both through the container egress proxy.
+
+| Probe | Result |
+|---|---|
+| `GET api.zotero.org/users/{id}/items?limit=1` with `Zotero-API-Key` | ❌ `curl (56) CONNECT tunnel failed, 403` |
+| `GET api.openalex.org/works?api_key=…` | ❌ `curl (56) CONNECT tunnel failed, 403` |
+
+**Errors hit:** both 403s. Same organization egress policy denial as before — the
+request never leaves the proxy, so **the credentials themselves remain untested**.
+Neither key has been shown to be valid or invalid; only that the network path is shut.
+
+**Result:** P2 ✅ and P3 ✅ supplied. **P1 (egress allowlist) is now the sole
+remaining blocker** for the whole of Phase L. Nothing about the Zotero library —
+including the full-text coverage measurement required by P4 and BR-8 — can be
+determined until P1 lands and a new session is started.
+
+**⚠ Operational security note:** the credentials were pasted into the chat transcript,
+which persists independently of this repository. Rotating both keys once the pipeline
+is confirmed working is the clean end state. Zotero keys are revocable at
+<https://www.zotero.org/settings/keys>; OpenAlex keys at
+<https://openalex.org/settings/api>.

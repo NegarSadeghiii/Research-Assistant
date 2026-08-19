@@ -481,8 +481,9 @@ daily free allowance. (Confirms the user's Q2 statement.)
 
 ### 2.7 — ⛔ Prerequisites for Gate G1 (user actions — I cannot do these)
 
-The runtime target is **this cloud environment** (D-015). That makes the following
-blocking. Until both land, every Layer-T tool is unrunnable and G1 cannot be probed.
+The runtime target is **this cloud environment** (D-015). **P2 and P3 are now
+supplied; P1 is the sole remaining blocker.** Until it lands, every Layer-T tool is
+unrunnable, no credential can be verified, and G1 cannot be probed.
 
 #### P1 — Widen the environment's network egress policy
 
@@ -503,16 +504,16 @@ Set on the environment, not in this session. See
 <https://code.claude.com/docs/en/claude-code-on-the-web>. **A new session must be
 started after the change** — policy is bound at session start.
 
-#### P2 — Create Zotero Web API credentials
+#### P2 — Create Zotero Web API credentials ✅ **SUPPLIED 2026-08-19**
 
-From <https://www.zotero.org/settings/keys>: create a private key (read access is
-sufficient for Stage 1) and note the **userID** shown on the same page. Store as
-`ZOTERO_API_KEY` and `ZOTERO_USER_ID` in `.env` — never committed.
+`ZOTERO_USER_ID` and `ZOTERO_API_KEY` are in `.env` (gitignored, mode 600).
+⚠ **Untested** — the live probe returned a proxy 403, so the key has been shown
+neither valid nor invalid. Verification waits on P1.
 
-#### P3 — Obtain an OpenAlex API key
+#### P3 — Obtain an OpenAlex API key ✅ **SUPPLIED 2026-08-19**
 
-<https://openalex.org/settings/api> — mandatory since 2026-02-13. Free tier with a
-daily allowance. Store as `OPENALEX_API_KEY`.
+`OPENALEX_API_KEY` is in `.env` (gitignored, mode 600). ⚠ **Untested** — same proxy
+403. Verification waits on P1.
 
 #### P4 — Phase L must measure Zotero full-text coverage (BR-8)
 

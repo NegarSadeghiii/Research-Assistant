@@ -23,9 +23,9 @@ credentials, OpenAlex key. Blueprint Q3–Q5 can proceed in parallel.
 - [ ] **GATE: user approves Blueprint**
 
 ## Phase L — Link (Connectivity)
-- [ ] **P1 (user)** — egress policy widened for the 6 required hosts (§2.7), new session started
-- [ ] **P2 (user)** — Zotero API key + userID created
-- [ ] **P3 (user)** — OpenAlex API key created
+- [ ] **P1 (user)** — ⛔ **SOLE REMAINING BLOCKER** — egress policy widened for the 6 required hosts (§2.7), new session started
+- [x] **P2 (user)** — ✅ Zotero API key + userID supplied, stored in `.env` (untested — P1 blocks)
+- [x] **P3 (user)** — ✅ OpenAlex API key supplied, stored in `.env` (untested — P1 blocks)
 - [ ] **P4** — measure Zotero full-text coverage; halt and report if inadequate (BR-8)
 - [ ] `.env` populated with every credential from Q2
 - [ ] Probe script per external service in `/execution/probes/`
