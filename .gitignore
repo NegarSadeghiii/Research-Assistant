@@ -1,0 +1,21 @@
+# Credentials — never commit
+.env
+.env.*
+!.env.example
+
+# Ephemeral workbench (deliverables-vs-intermediates rule)
+.tmp/*
+!.tmp/.gitkeep
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
