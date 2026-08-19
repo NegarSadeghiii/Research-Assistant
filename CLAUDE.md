@@ -20,18 +20,35 @@ credentials. See §2.7.
 built and tested (30 tests passing). **No external link is verified.** The single
 blocker is the egress allowlist (§2.7 P1) — a user action, not a build task.
 
-### Step 1 — before starting a new session (user)
-Widen the environment's network egress policy to allow these hosts:
+### Step 1 — widen the environment's network access (user)
+
+Verified against <https://code.claude.com/docs/en/cloud-environments>:
+
+1. Go to <https://claude.ai/code>.
+2. In the row **above the message box**, click the **cloud icon** showing the current
+   environment name (likely "Default"). There is no settings page or direct URL.
+3. Hover the environment → click the **settings gear** on the right.
+4. Set **Network access** to **Custom**.
+5. In **Allowed domains**, one per line:
 
 ```
-api.zotero.org           api.openalex.org        api.semanticscholar.org
-eutils.ncbi.nlm.nih.gov  api.crossref.org        doi.org
+api.zotero.org
+api.openalex.org
+api.semanticscholar.org
+eutils.ncbi.nlm.nih.gov
+api.crossref.org
+doi.org
 ```
 
-Optional: `export.arxiv.org`, `www.ebi.ac.uk`.
-Set on the **environment**, not the session — <https://code.claude.com/docs/en/claude-code-on-the-web>.
-⚠ **Then start a NEW session.** Policy binds at session start; changing it mid-session
-has no effect.
+   Optional: `export.arxiv.org`, `www.ebi.ac.uk` (Europe PMC).
+6. ✅ **Tick "Also include default list of common package managers."** Without it the
+   allowlist replaces the Trusted defaults and pip/npm/GitHub raw content break.
+7. Save.
+
+⚠ **Then start a NEW session.** Sessions read network config once, at startup.
+
+> The current environment is on **Trusted** (package registries + GitHub only), which
+> is why all six hosts return 403 on CONNECT.
 
 ### Step 2 — first commands in the new session
 ```
@@ -39,8 +56,14 @@ python3 execution/probes/run_all.py            # G1 gate check; expect 5/5 green
 python3 execution/measure_zotero_coverage.py --sample 25   # the BR-8 / P4 measurement
 ```
 
-`.env` does **not** survive the container. Re-create it from `.env.example`; the
-Zotero and OpenAlex credentials must be supplied again.
+`.env` does **not** survive the container — it is gitignored and the VM is fresh.
+Re-create it from `.env.example`; the Zotero and OpenAlex credentials must be
+supplied again each session.
+
+> The environment dialog has an **Environment variables** box, which would persist
+> them. The docs advise against it: values are readable by anyone using the
+> environment and there is no secrets store. For a personal environment that
+> trade-off is the user's to make — but it is a real trade-off, not a free win.
 
 ### Step 3 — the decision that gates everything after
 `measure_zotero_coverage.py` answers whether the library exposes real indexed full
