@@ -216,3 +216,53 @@ that no source actually asserts, which is F3 arriving through the back door.
 provenance or silence; a required field makes that enforceable by a validator instead
 of relying on the model to remember. A record that cannot answer "what evidence was
 inspected" fails validation rather than shipping.
+
+### D-022 — Four payloads, four directories, three formats
+**Date:** 2026-08-19
+**Decision:** BUILD notes → `/literature-notes/*.md`; screening reports →
+`/screening-results/YYYY-MM-DD.html`; positioning briefs →
+`/positioning-briefs/idea-short-name-YYYY-MM-DD.docx`; monitoring digests →
+`/literature-digests/YYYY-MM-DD.docx`. Git repo is canonical; no delivery channel
+assumed before Phase T.
+**Reason:** User specification (Q4). Format follows use: Markdown for notes because
+they must open in Obsidian, HTML for screening because it is a scannable batch review,
+DOCX for briefs and digests because they are read as documents.
+
+### D-023 — Rejected papers are retained in screening reports (BR-20)
+**Date:** 2026-08-19
+**Decision:** Screening reports keep irrelevant and uncertain papers with their
+reasons. Never pruned.
+**Reason:** User instruction (Q4). The rejection record is what lets the system
+explain a past decision and skip re-screening — it is the audit trail, not clutter.
+Pruning it would also destroy the evidence needed to answer provenance question 2
+(§2.8.7) for anything not accepted.
+
+### D-024 — An empty digest is a correct result (BR-18)
+**Date:** 2026-08-19
+**Decision:** Zero qualifying papers ⇒ no file is written, only a short status
+message. No minimum paper count.
+**Reason:** User instruction (Q4). This is the structural defense against F2: a
+system obliged to produce N papers per run will find N papers whether or not they
+merit attention. Making emptiness a legitimate outcome removes the incentive to pad.
+Writing no file at all (rather than an empty one) also keeps `/literature-digests/`
+a list of periods that actually mattered.
+
+### D-025 — Two explicit exceptions to BR-5 (BR-19)
+**Date:** 2026-08-19
+**Decision:** Screening reports and monitoring digests may be saved automatically;
+positioning briefs may not. Authorization is the user's, given explicitly in Q4.
+**Reason:** The user drew the line by degree of intellectual commitment. A screening
+report records verdicts already reached mechanically; a digest is a filtered alert. A
+positioning brief argues a case about the novelty of the user's own work — it must be
+challenged before it is fixed in the record, or F6 becomes durable.
+
+### D-026 — Three payload questions raised, not assumed (O1–O3)
+**Date:** 2026-08-19
+**Decision:** Recorded in §2.10 rather than resolved: (O1) whether "saved" means a
+working-tree write or a commit + push; (O2) the timezone and hour of "Monday/Saturday
+morning"; (O3) which branch unattended runs push to.
+**Reason:** All three are load-bearing and none was determined by Q4. O1 is the
+sharpest: the container is ephemeral, so an unattended digest that writes without
+committing produces nothing that survives the session — the payload would never land,
+violating invariant 7. Guessing any of the three would embed an assumption into the
+Trigger design that is expensive to unwind later. Invariant 10 applies.

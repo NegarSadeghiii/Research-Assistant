@@ -6,7 +6,7 @@
 
 **Build protocol:** B.L.A.S.T. (Blueprint → Link → Architect → Stylize → Trigger)
 **Build layers:** A.N.T. (Architecture → Navigation → Tools)
-**Current state:** 🔴 **HALTED — Phase B.** Q1–Q3 answered. Q4–Q5 open.
+**Current state:** 🔴 **HALTED — Phase B.** Q1–Q4 answered. Q5 open.
 **Runtime target:** ☁ **this cloud environment** (decided 2026-08-19, D-015).
 **⚠ Two user actions are prerequisites for G1** — egress allowlist + Zotero Web API
 credentials. See §2.7.
@@ -57,7 +57,7 @@ credentials. See §2.7.
 | 1 | **North Star** | ✅ **ANSWERED** — see §2.1. End-to-end research assistant: literature → defensible methodology → reproducible computation → validated results → publication-quality manuscript. **Build order starts with Literature Intelligence.** |
 | 2 | **Integrations** — external services + credential readiness | ✅ **ANSWERED** — see §2.5 register. Zotero via existing connector (preferred); discovery stack = Consensus + OpenAlex + Semantic Scholar + PubMed/PMC + Crossref. **Runtime blocker in §2.6.** |
 | 3 | **Source of Truth** — where the primary data lives | ✅ **ANSWERED** — see §2.8. Research material is location-variable and must be *asked for*; operational state lives in `/state/`; Zotero is read-only in Stage 1 v1; discovered papers go to a staging area. |
-| 4 | **Delivery Payload** — how and where the result lands | *unanswered* |
+| 4 | **Delivery Payload** — how and where the result lands | ✅ **ANSWERED** — see §2.9. Four payloads, four directories, three formats. Git repo is canonical; notification channel deferred to Phase T. |
 | 5 | **Behavioral Rules** — tone, must-dos, must-nots, refusals | *unanswered* |
 
 ---
@@ -456,6 +456,65 @@ For every important literature judgment, it must eventually be answerable:
 
 ---
 
+### 2.9 — Delivery Payload (Q4)
+
+**The Git repository is the canonical destination for saved Stage 1 outputs.**
+No delivery channel (email or otherwise) may be assumed — the notification mechanism
+is chosen in Phase T, after the runtime is finalized.
+
+| # | Payload | Path | Format | Saved automatically? |
+|---|---|---|---|---|
+| 1 | **BUILD notes** | `/literature-notes/YYYY-MM-DD-paper-short-title.md` | Markdown (Obsidian-compatible) | written incrementally per BUILD stage — see ⚠ below |
+| 2 | **Screening report** | `/screening-results/YYYY-MM-DD.html` | HTML | ✅ **yes** — explicitly authorized |
+| 3 | **Positioning brief** | `/positioning-briefs/idea-short-name-YYYY-MM-DD.docx` | DOCX | ❌ **no** — approval-gated (BR-5) |
+| 4 | **Monitoring digest** | `/literature-digests/YYYY-MM-DD.docx` | DOCX | ✅ **yes** — explicitly authorized |
+
+#### 1 — BUILD notes
+Markdown so they drop straight into Obsidian. **Updated incrementally as each BUILD
+stage completes**, not written once at the end.
+
+#### 2 — Screening report
+Contains **relevant, irrelevant and uncertain** papers, each with the reason for its
+classification. ⛔ **Rejected papers are retained deliberately** — the report is how
+the system explains a previous screening decision and avoids re-screening the same
+paper. Never prune rejections to shorten the report.
+
+#### 3 — Positioning brief
+Substantive intellectual output. **Never automatically finalized or committed.**
+Sequence: present the analysis → the user reviews and challenges it → the user
+approves → *then* ask whether to save the finalized DOCX to the repository. (BR-5)
+
+#### 4 — Monitoring digest
+**Cadence: twice weekly — Monday morning and Saturday morning.**
+
+- Highly filtered and **short**. No minimum paper count.
+- ⛔ **Zero papers is a correct and desirable outcome**, not a failure. In a quiet
+  period the right digest is an empty one.
+- **Zero papers ⇒ produce no file.** Report a short status message that nothing met
+  the relevance threshold for that period. Never write an empty document. (BR-18)
+- For each included paper: enough to decide whether it deserves attention, above all
+  **why it may matter to the current research**.
+- ⛔ **Not a general literature summary.** A digest that summarizes rather than
+  justifies has failed its purpose.
+- May be saved automatically — the user explicitly authorized this as a scheduled
+  Stage 1 output.
+
+> ⚠ **Three consequences requiring a ruling — see §2.10.**
+
+---
+
+### 2.10 — ⚠ Open payload questions (raised 2026-08-19, not yet ruled)
+
+These follow from Q4 but were not settled by it. **Do not resolve by assumption.**
+
+| # | Question | Why it matters |
+|---|---|---|
+| **O1** | Does "saved" mean *written to the working tree*, or *committed and pushed*? | The container is **ephemeral**. A file written but not committed is destroyed when the session ends. For the unattended digest run this is decisive: without a commit + push, a scheduled digest produces nothing that survives. It also affects BUILD notes — incremental per-stage writing implies working-tree writes during a session, with the commit as a separate act. |
+| **O2** | Which timezone is "Monday morning / Saturday morning", and at what hour? | A cron expression cannot be written without it. |
+| **O3** | Which branch do unattended runs push to? | An automated push to a default branch behaves very differently from one to a dedicated branch, and BR-5/BR-6 both bear on it. |
+
+---
+
 ### L — Link
 Verified connections: *none yet.* See `/memory/progress.md` for the probe table.
 
@@ -469,12 +528,20 @@ Verified connections: *none yet.* See `/memory/progress.md` for the probe table.
 *No SOPs or tools authored yet.*
 
 ### S — Stylize
-Payload formatting rules: *pending Q4.*
+Formatting rules per payload are fixed by §2.9. Detailed templates (HTML report
+layout, DOCX structure, Markdown note skeleton) are authored in Phase S and must each
+ship with a verify command (invariant 8).
 
 ### T — Trigger
 | Trigger | Type | Schedule / Event | Entry point | Status |
 |---|---|---|---|---|
-| Monitoring digest | recurring | pending Q4 | not built | not configured |
+| Monitoring digest | recurring | **Mon + Sat morning** (timezone/hour pending — O2) | not built | not configured |
+| Screening batch | on demand | user-initiated | not built | not configured |
+| Positioning brief | on demand | user-initiated | not built | not configured |
+| BUILD session | interactive | user-initiated | not built | not configured |
+
+> Notification mechanism for unattended runs is **deliberately unspecified** — chosen
+> in Phase T once the runtime is finalized. Do not assume email. (Q4)
 
 ---
 
@@ -578,6 +645,10 @@ CLAUDE.md          # this file — constitution + state
   findings.md      #   research, discoveries, constraints
   progress.md      #   work done, errors, tests, results
   decisions.md     #   architectural choices + reasoning
+/literature-notes/    # payload 1 — BUILD notes, Markdown, Obsidian-ready
+/screening-results/   # payload 2 — HTML screening reports (auto-saved)
+/positioning-briefs/  # payload 3 — DOCX briefs (approval-gated)
+/literature-digests/  # payload 4 — DOCX digests, Mon + Sat (auto-saved)
 /state/            # operational memory — machine-readable, auto-updatable (BR-11)
   paper-registry.json
   digest-history.json
@@ -611,4 +682,5 @@ When anything fails:
 | 2026-08-19 | Blueprint Q2 answered | Integration register §2.5; rules BR-5..BR-8 | n/a |
 | 2026-08-19 | Early reachability probe | §2.6 — Zotero + 4 discovery APIs unreachable from remote container; Consensus + WebSearch green | n/a |
 | 2026-08-19 | Blueprint Q3 answered | §2.8 source-of-truth model; `/state/` defined; BR-9..BR-16; BR-5 scoped to intellectual output | n/a |
+| 2026-08-19 | Blueprint Q4 answered | §2.9 four payloads/paths/formats; §2.10 open items O1–O3; BR-17..BR-20 | n/a |
 | 2026-08-19 | Runtime target decided | ☁ cloud environment (D-015); Zotero Web API activated as the user's stated fallback; §2.7 prerequisites raised | n/a |

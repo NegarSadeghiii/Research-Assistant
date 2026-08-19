@@ -140,3 +140,23 @@ document, the paper registry fields, the staging record fields, and the provenan
 fields all come from Q3. The output side waits on Q4.
 
 **Next action:** Blueprint Q4 (Delivery Payload).
+
+## 2026-08-19 — Blueprint Q4 answered
+
+**Done**
+- Recorded Q4 into CLAUDE.md §2.9: four payloads with fixed paths, formats and
+  save-policies. Added BR-17..BR-20 and decisions D-022..D-026.
+- Updated the Trigger table with all four entry points and the deferred notification
+  mechanism; updated the Stylize section and the repository map with the four
+  payload directories.
+- Raised §2.10 — three open payload questions (O1 save semantics, O2 timezone,
+  O3 push branch) rather than resolving them by assumption.
+
+**Errors hit:** none.
+
+**Tests run:** none — G0 still closed pending Q5.
+
+**Result:** Output side of the Data Schema is now determined except for the three
+open items. Both halves of the schema can be drafted once Q5 lands.
+
+**Next action:** Blueprint Q5 (Behavioral Rules) — the final discovery question.
