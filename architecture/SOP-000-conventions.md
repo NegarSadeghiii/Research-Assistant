@@ -42,6 +42,10 @@ Claims without evidence violate invariant 11.
 ## 4. Credentials
 
 - Read from `.env` only, via `_common.load_env()`. Never hardcoded, never logged.
+- `load_env()` strips a matching pair of surrounding quotes. `.env` convention permits
+  them, and a quoted credential is silently the wrong credential otherwise.
+- ⚠ **Before concluding a credential is invalid, check the loaded length.** A service
+  rejecting a key proves the bytes sent were wrong, not that the key on file is wrong.
 - A tool that needs a missing key exits `3` and **names the key**, never the value.
 - No credential value is ever written to stdout, stderr, `/state/`, or `/.tmp/`.
 

@@ -40,8 +40,11 @@ def main() -> int:
     base = f"https://api.zotero.org/users/{uid}"
 
     try:
+        # /items/top returns top-level items only - attachments and child notes are
+        # excluded by construction, so no itemType filter (and no operator encoding)
+        # is needed. See SOP-001 lessons, 2026-08-19.
         _, items, resp_headers = get_json(
-            f"{base}/items?limit={args.sample}&itemType=-attachment||note", headers)
+            f"{base}/items/top?limit={args.sample}", headers)
         library_total = resp_headers.get("Total-Results")
 
         with_pdf = indexed = meaningful = 0

@@ -13,7 +13,10 @@ import sys
 from _common import GREEN, RED, classify_error, emit, get_json, load_env
 
 TOOL = "probe_crossref"
-KNOWN_DOI = "10.1038/s41587-023-01911-8"  # Elsallab et al. 2023, Nature Biotechnology
+# Any stably resolvable DOI serves this probe. The title is whatever Crossref
+# asserts - this file makes no claim about which paper it is. An earlier comment here
+# named the wrong paper; the live probe surfaced the mismatch (2026-08-19).
+KNOWN_DOI = "10.1038/s41587-023-01911-8"
 
 
 def main() -> int:

@@ -75,6 +75,26 @@ That is a correct run reporting a true environment state, not a tool failure.
 
 ## 7. Lessons recorded
 
+- **2026-08-19 — G1 CLOSED.** Zotero (1637 items), OpenAlex, PubMed and Crossref all
+  green from local execution. Semantic Scholar is optional (D-038).
+- **2026-08-19 — quoted `.env` values.** `KEY="abc"` was loaded as `'"abc"'`, and the
+  service rejected it as a wrong credential. The symptom accused the key; the cause
+  was the file. `load_env()` now strips a matching quote pair, and
+  `tests/test_env_loading.py` pins the behaviour. **Rule: a credential failure is not
+  evidence about the credential until the loaded value has been checked for length.**
+- **2026-08-19 — hand-built Zotero query string.** `itemType=-attachment||note` was
+  sent unencoded and Zotero returned HTTP 400. Fixed by using `/items/top`, which
+  excludes attachments and child notes by construction. **Rule for every Zotero call:
+  never hand-build a query string.** Use `urllib.parse.urlencode`, or an endpoint
+  whose semantics remove the need for a filter. The probes were unaffected only
+  because their queries carry no operators, which is why this survived to first use.
+- **2026-08-19 — a comment asserted a fact about a paper.** `probe_crossref.py` named
+  its test DOI as a specific CAR-T paper; the live probe resolved a different title.
+  The probe was correct, the comment was not. **Rule: source files make no claims
+  about papers.** Bibliographic facts live in the registry, where the validator can
+  reach them; a comment is unreachable by V4 and V5 and so can carry an F3 error
+  indefinitely.
+
 - **2026-08-19** — Coverage measurement was split into its own script rather than a
   `--coverage` flag on the Zotero probe. A probe answers "is the link up?"; a coverage
   measurement answers "is the content sufficient?" Those are different questions with

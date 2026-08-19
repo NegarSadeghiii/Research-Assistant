@@ -29,7 +29,14 @@ def load_env(path: Path | None = None) -> dict[str, str]:
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, _, value = line.partition("=")
-        values[key.strip()] = value.strip()
+        value = value.strip()
+        # .env convention allows quoted values. Without this, a perfectly valid
+        # KEY="abc" yields the 24-character string '"abc"' and the service rejects
+        # it as a wrong credential - which reads as "your key is bad", not "your
+        # file is quoted". Cost a debugging round on 2026-08-19.
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+            value = value[1:-1]
+        values[key.strip()] = value
     return values
 
 
