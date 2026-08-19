@@ -91,3 +91,30 @@ to the user rather than designed around.
 | PubMed E-utilities | optional key | curl | ❌ egress blocked | 2026-08-19 |
 | Crossref | polite mailto | curl | ❌ egress blocked | 2026-08-19 |
 | WebSearch | n/a | live query | ✅ green | 2026-08-19 |
+
+## 2026-08-19 — Runtime target decided; G1 prerequisites raised
+
+**Done**
+- Probed four further candidate hosts to make the allowlist request evidence-based:
+  `api.zotero.org`, `doi.org`, `export.arxiv.org`, `www.ebi.ac.uk` — **all four 403
+  on CONNECT**, same egress policy denial.
+- Confirmed the cause at source. `/root/.ccr/README.md`, section "403 / 407 from the
+  proxy": *"The destination host is not allowed by your organization's egress policy
+  for this session. Do not retry or route around it — report the blocked host."*
+  Complied: reported, did not retry, did not route around.
+- User chose **cloud environment** as the runtime target → D-015.
+- Amended D-009: Zotero Web API becomes the active path; the user's own Phase-L
+  fallback condition fired (on reachability rather than coverage).
+- Wrote CLAUDE.md §2.7 — four prerequisites (P1 egress allowlist, P2 Zotero
+  credentials, P3 OpenAlex key, P4 full-text coverage measurement).
+- Updated `.env.example` with Zotero key names.
+
+**Errors hit:** 4 further proxy 403s, all expected and diagnosed.
+
+**Tests run:** 4 curl probes. Still no scripts in `/execution/` — G0 remains closed.
+
+**Result:** Runtime unblocked as a *decision*, still blocked as a *capability*.
+Nothing can be verified in Phase L until the egress policy is widened and a new
+session started. Blueprint continues in parallel: Q3–Q5 do not depend on P1–P3.
+
+**Next action:** Blueprint Q3 (Source of Truth).

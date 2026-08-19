@@ -126,3 +126,33 @@ A deterministic Layer-T script stack targeting OpenAlex/S2/PubMed/Crossref canno
 execute in this environment as configured. Choosing the runtime after writing the
 tools would mean rewriting them; invariant 1 (Data-First) and the G0 gate both
 require settling this first.
+
+### D-015 — Runtime target: this cloud environment
+**Date:** 2026-08-19
+**Decision:** Layer-T tools execute in the Claude Code cloud environment, not on the
+user's local machine. User's choice, made against the measured evidence in §2.6.
+**Reason:** The user selected it after being shown that it requires two configuration
+changes (egress allowlist, Zotero Web API). The payoff is a single reproducible
+execution context: one runtime, one credential store, one set of probes, and a
+monitoring digest (capability 1d) that can fire on a schedule without the user's
+laptop being awake. A split runtime would have meant two sets of assumptions and a
+weaker reproducibility story — which invariant 7 and F11 both penalise.
+**Consequences accepted:**
+- The Claude Desktop Zotero connector is out of scope; `api.zotero.org` replaces it.
+- Nothing can be probed until the egress policy is widened (§2.7 P1).
+- A new session is required after the policy change — policy binds at session start.
+
+### D-009 (AMENDED 2026-08-19) — Zotero access path
+**Original:** Prefer the existing Claude Desktop connector; do not set up the Zotero
+Web API unless the connector proves insufficient during Phase L.
+**Amendment:** The Web API is now the active path.
+**Reason:** The user's own fallback condition fired, though not for the reason it
+anticipated. The connector was expected to fail on *coverage* (metadata vs full
+text); it instead fails on *reachability* — it is a Desktop-local MCP server and
+D-015 puts the runtime in a cloud container with no path to it. The instruction's
+intent (do not build a second access path unnecessarily) is preserved: the connector
+cannot serve the chosen runtime at all, so the Web API is not redundant.
+**Unchanged:** BR-8 still governs. The coverage question the original instruction
+worried about is now *more* pressing, because the Web API exposes attachment full
+text only for files synced to Zotero storage and indexed. §2.7 P4 makes measuring
+this a precondition for designing any screening tool.

@@ -1,7 +1,9 @@
 # Task Plan — Research-Assistant
 
 **Status:** 🔴 HALTED in Phase B (Blueprint) discovery. Q1–Q2 answered, Q3–Q5 open.
-**⚠ Blocking decision:** runtime target undecided — see D-014 and CLAUDE.md §2.6.
+**Runtime target:** ☁ cloud environment (D-015, decided 2026-08-19).
+**⚠ Blocked on user actions:** CLAUDE.md §2.7 P1–P3 — egress allowlist, Zotero
+credentials, OpenAlex key. Blueprint Q3–Q5 can proceed in parallel.
 **Build target:** Stage 1 — Literature Intelligence (see CLAUDE.md §2.4).
 **Blueprint approved:** NO — logic is forbidden in `/execution/` until this flips to YES.
 
@@ -21,6 +23,10 @@
 - [ ] **GATE: user approves Blueprint**
 
 ## Phase L — Link (Connectivity)
+- [ ] **P1 (user)** — egress policy widened for the 6 required hosts (§2.7), new session started
+- [ ] **P2 (user)** — Zotero API key + userID created
+- [ ] **P3 (user)** — OpenAlex API key created
+- [ ] **P4** — measure Zotero full-text coverage; halt and report if inadequate (BR-8)
 - [ ] `.env` populated with every credential from Q2
 - [ ] Probe script per external service in `/execution/probes/`
 - [ ] Every probe green, results logged in `progress.md`
@@ -56,9 +62,8 @@ Scoped from Q1. Not planned in detail until G0 closes.
 | 1d | New-publication monitoring digest | Q2, Q4, Phase T |
 
 ## Open Questions Blocking Progress
-1. **⚠ RUNTIME TARGET (new, blocking).** Zotero connector absent from this session;
-   OpenAlex / Semantic Scholar / PubMed / Crossref all blocked by container egress
-   policy. Decide where Layer-T tools execute before any is written. See §2.6.
+1. ✅ ~~Runtime target~~ — resolved: cloud environment (D-015). Superseded by the
+   §2.7 prerequisites, which are user actions rather than open questions.
 2. **Q3 — Source of Truth:** is Zotero authoritative, and where do the user's own
    ideas / methodology / drafts / research questions live?
 3. **Q4 — Delivery Payload:** shape and destination of screening reports,

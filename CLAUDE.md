@@ -7,8 +7,9 @@
 **Build protocol:** B.L.A.S.T. (Blueprint → Link → Architect → Stylize → Trigger)
 **Build layers:** A.N.T. (Architecture → Navigation → Tools)
 **Current state:** 🔴 **HALTED — Phase B.** Q1–Q2 answered. Q3–Q5 open.
-**⚠ Blocker:** primary data path (Zotero) is not reachable from the current runtime.
-See §2.6.
+**Runtime target:** ☁ **this cloud environment** (decided 2026-08-19, D-015).
+**⚠ Two user actions are prerequisites for G1** — egress allowlist + Zotero Web API
+credentials. See §2.7.
 
 ---
 
@@ -214,15 +215,22 @@ written for them until Stage 1 has landed its payload.**
 
 | Service | Role | Access path | Credential | Stage |
 |---|---|---|---|---|
-| **Zotero** | Existing personal library — the primary source for screening | **Existing Zotero connector (Claude Desktop).** Preferred path. | already connected by user | 1 |
+| **Zotero** | Existing personal library — the primary source for screening | **Zotero Web API** (`api.zotero.org`) — fallback path, now active | ⚠ **NOT YET CREATED** — see §2.7 | 1 |
 
-> **Zotero Web API is explicitly NOT to be set up** unless the connector proves
-> insufficient during Phase L. If the connector exposes only metadata or incomplete
-> paper text, **halt and report what additional access is required** — never design
-> silently around missing content. (User instruction, Q2.)
+> **Path changed 2026-08-19.** Q2 preferred the existing Claude Desktop connector and
+> permitted the Web API *only if the connector proved insufficient during Phase L*.
+> **That condition has fired.** The connector is a Desktop-local MCP server; the
+> runtime target chosen in D-015 is this cloud container, which has no path to it.
+> The connector is not "insufficient" in coverage — it is **unreachable from the
+> chosen runtime**. The Web API is therefore the user's own stated fallback, not a
+> deviation from the instruction. (D-009 amended, D-015.)
 >
-> ⚠ Connector coverage is **unverified**: how much of each PDF it exposes, and whether
-> full text is searchable, must be tested in Phase L before any architecture decision.
+> ⚠ **Coverage remains unverified and is a live BR-8 risk.** The Web API returns
+> attachment full text only for files synced to Zotero cloud storage and indexed by
+> Zotero. If the library's PDFs are stored only on the local disk, or exceed the
+> storage tier, the API will expose **metadata without full text** — which cannot
+> satisfy the Q1 requirement to read intros and conclusions during screening.
+> **This must be measured in Phase L before any screening tool is designed.**
 
 **External discovery stack** — multiple complementary sources; no single database is
 treated as complete.
@@ -270,15 +278,77 @@ Probed 2026-08-19 from the Claude Code remote container. **These are measured, n
 | **Consensus MCP** | ✅ **working** | Live query returned real domain results, incl. the user's own 2025 WSC papers |
 | **WebSearch** | ✅ **working** | Uses a separate path from container egress |
 
+Extended probe, same session:
+
+| Target | Result |
+|---|---|
+| `api.zotero.org` | ❌ blocked — 403 on CONNECT |
+| `doi.org` | ❌ blocked — 403 on CONNECT |
+| `export.arxiv.org` | ❌ blocked — 403 on CONNECT |
+| `www.ebi.ac.uk` (Europe PMC) | ❌ blocked — 403 on CONNECT |
+
+**Root cause, confirmed at source.** `/root/.ccr/README.md`: *"403 / 407 from the
+proxy — The destination host is not allowed by your organization's egress policy for
+this session. Do not retry or route around it — report the blocked host."* The
+`noProxy` allowlist covers only Anthropic domains and package registries. This is the
+environment's **network access policy**, not a defect.
+
 **Consequence:** deterministic `/execution/` scripts that call OpenAlex, Semantic
-Scholar, PubMed, or Crossref **cannot run in this environment as currently
-configured.** The runtime target must be decided before any tool is written —
-it determines the entire Layer-T design. ⛔ **Open decision, blocking G0.**
+Scholar, PubMed, Crossref **or Zotero** cannot run in this environment **until the
+egress policy is widened**. ✅ Runtime decided (D-015); ⛔ **the policy change is now
+a hard prerequisite for G1.**
 
 **Verified external fact:** OpenAlex made API keys mandatory on **2026-02-13**;
 the polite pool was discontinued and the `mailto` parameter is no longer accepted.
 Free keys available at `openalex.org/settings/api`, with usage-based pricing above a
 daily free allowance. (Confirms the user's Q2 statement.)
+
+---
+
+### 2.7 — ⛔ Prerequisites for Gate G1 (user actions — I cannot do these)
+
+The runtime target is **this cloud environment** (D-015). That makes the following
+blocking. Until both land, every Layer-T tool is unrunnable and G1 cannot be probed.
+
+#### P1 — Widen the environment's network egress policy
+
+The environment must allow outbound HTTPS to these hosts. All are currently denied.
+
+| Host | Why it is needed |
+|---|---|
+| `api.zotero.org` | **Primary library** — the entire Stage 1 input |
+| `api.openalex.org` | Discovery, citation graph, snowballing |
+| `api.semanticscholar.org` | Paper search, citation graph, recommendations |
+| `eutils.ncbi.nlm.nih.gov` | PubMed / PMC — clinical + CAR-T literature |
+| `api.crossref.org` | DOI validation layer (the mechanical guard for F3) |
+| `doi.org` | DOI resolution |
+| `export.arxiv.org` | Preprints *(optional — add if arXiv coverage is wanted)* |
+| `www.ebi.ac.uk` | Europe PMC *(optional — open-access full text)* |
+
+Set on the environment, not in this session. See
+<https://code.claude.com/docs/en/claude-code-on-the-web>. **A new session must be
+started after the change** — policy is bound at session start.
+
+#### P2 — Create Zotero Web API credentials
+
+From <https://www.zotero.org/settings/keys>: create a private key (read access is
+sufficient for Stage 1) and note the **userID** shown on the same page. Store as
+`ZOTERO_API_KEY` and `ZOTERO_USER_ID` in `.env` — never committed.
+
+#### P3 — Obtain an OpenAlex API key
+
+<https://openalex.org/settings/api> — mandatory since 2026-02-13. Free tier with a
+daily allowance. Store as `OPENALEX_API_KEY`.
+
+#### P4 — Phase L must measure Zotero full-text coverage (BR-8)
+
+Before any screening tool is designed, measure — do not assume:
+- how many library items have a synced PDF attachment;
+- for how many of those the API returns indexed full text;
+- whether that text is real text or an empty index (scanned/unOCR'd PDFs).
+
+If full text is unavailable at scale, **halt and report** what further access is
+required. Do not design screening around metadata-only input.
 
 ---
 
@@ -407,3 +477,4 @@ When anything fails:
 | 2026-08-19 | Blueprint Q1 answered | North Star, success/failure criteria, capability roadmap recorded | n/a |
 | 2026-08-19 | Blueprint Q2 answered | Integration register §2.5; rules BR-5..BR-8 | n/a |
 | 2026-08-19 | Early reachability probe | §2.6 — Zotero + 4 discovery APIs unreachable from remote container; Consensus + WebSearch green | n/a |
+| 2026-08-19 | Runtime target decided | ☁ cloud environment (D-015); Zotero Web API activated as the user's stated fallback; §2.7 prerequisites raised | n/a |
