@@ -156,3 +156,63 @@ cannot serve the chosen runtime at all, so the Web API is not redundant.
 worried about is now *more* pressing, because the Web API exposes attachment full
 text only for files synced to Zotero storage and indexed. §2.7 P4 makes measuring
 this a precondition for designing any screening tool.
+
+### D-016 — BR-5 scoped: operational state auto-updates, intellectual output does not
+**Date:** 2026-08-19
+**Decision:** `/state/` (paper registry, digest history, research profile) may be
+written automatically. BUILD notes, gap analyses, methodology comparisons,
+interpretations, positioning documents and manuscript drafts may not.
+**Reason:** User ruling (Q3), and it resolves a real contradiction. BR-5 as written in
+Q2 would have made the monitoring digest impossible — it cannot avoid re-showing
+papers without remembering what it showed. The distinction that makes both work is
+*operational memory vs intellectual product*, not *automatic vs manual*. The
+boundary is now explicit in §2.8.2 so a future tool cannot quietly file a gap analysis
+under "state".
+
+### D-017 — Research material location is asked for, never assumed (BR-9)
+**Date:** 2026-08-19
+**Decision:** At the start of a research task, ask which document, folder, repository
+or branch is the current version, unless unambiguous.
+**Reason:** User instruction (Q3) — material lives in Drive, local files, Overleaf
+exports or a research repo depending on the project. This is the Stage 1 analogue of
+BR-6 (never assume `main`): reading a superseded methodology draft would silently
+poison every downstream relevance judgment, and the error would be invisible because
+the output would still look well-formed.
+
+### D-018 — Relevance is judged against the document, not keywords (BR-10)
+**Date:** 2026-08-19
+**Decision:** Positioning and screening read the current research idea/methodology
+first and rank against it. Broad-term ranking is prohibited.
+**Reason:** User instruction (Q3), and it is the direct mechanical guard for F5
+(keyword similarity treated as relevance). This constrains the Layer-T design: the
+screening tool's input contract must include the anchor document, so a call without
+one is a schema error rather than a silently degraded ranking.
+
+### D-019 — Zotero is read-only in Stage 1 v1 (BR-12), with a staging area (BR-13)
+**Date:** 2026-08-19
+**Decision:** No automatic Zotero writes. Discovered papers accumulate in a staging
+area with a stated reason and await acceptance. Automatic write-back (e.g. a screening
+tag) is deferred to a separate explicit decision once screening is proven reliable.
+**Reason:** User instruction (Q3). Also the safer engineering order: the library is
+the one artifact in this system that is expensive to repair by hand, and an
+unreliable screener writing tags into it would be difficult to unwind. Read-only
+means every Stage 1 bug is recoverable by deleting a file in `/state/`.
+
+### D-020 — Bibliographic reconciliation rules (BR-14)
+**Date:** 2026-08-19
+**Decision:** Reconcile on persistent identifiers, DOI first. Prefer the publisher /
+Crossref record for published metadata. Zotero stays authoritative for personal
+organization. Preprint and published article are one item in two versions. Flag
+meaningful conflicts rather than choosing.
+**Reason:** User instruction (Q3). "Flag, never silently choose" is what separates
+this from a merge heuristic: a silent pick would manufacture a bibliographic record
+that no source actually asserts, which is F3 arriving through the back door.
+
+### D-021 — Provenance fields are schema, not documentation (BR-16)
+**Date:** 2026-08-19
+**Decision:** The seven provenance questions in §2.8.7 become required fields of
+`paper-registry.json`.
+**Reason:** User instruction (Q3) elevated to a schema constraint. Invariant 11 says
+provenance or silence; a required field makes that enforceable by a validator instead
+of relying on the model to remember. A record that cannot answer "what evidence was
+inspected" fails validation rather than shipping.

@@ -6,7 +6,7 @@
 
 **Build protocol:** B.L.A.S.T. (Blueprint → Link → Architect → Stylize → Trigger)
 **Build layers:** A.N.T. (Architecture → Navigation → Tools)
-**Current state:** 🔴 **HALTED — Phase B.** Q1–Q2 answered. Q3–Q5 open.
+**Current state:** 🔴 **HALTED — Phase B.** Q1–Q3 answered. Q4–Q5 open.
 **Runtime target:** ☁ **this cloud environment** (decided 2026-08-19, D-015).
 **⚠ Two user actions are prerequisites for G1** — egress allowlist + Zotero Web API
 credentials. See §2.7.
@@ -56,7 +56,7 @@ credentials. See §2.7.
 |---|---|---|
 | 1 | **North Star** | ✅ **ANSWERED** — see §2.1. End-to-end research assistant: literature → defensible methodology → reproducible computation → validated results → publication-quality manuscript. **Build order starts with Literature Intelligence.** |
 | 2 | **Integrations** — external services + credential readiness | ✅ **ANSWERED** — see §2.5 register. Zotero via existing connector (preferred); discovery stack = Consensus + OpenAlex + Semantic Scholar + PubMed/PMC + Crossref. **Runtime blocker in §2.6.** |
-| 3 | **Source of Truth** — where the primary data lives | *unanswered* |
+| 3 | **Source of Truth** — where the primary data lives | ✅ **ANSWERED** — see §2.8. Research material is location-variable and must be *asked for*; operational state lives in `/state/`; Zotero is read-only in Stage 1 v1; discovered papers go to a staging area. |
 | 4 | **Delivery Payload** — how and where the result lands | *unanswered* |
 | 5 | **Behavioral Rules** — tone, must-dos, must-nots, refusals | *unanswered* |
 
@@ -352,6 +352,110 @@ required. Do not design screening around metadata-only input.
 
 ---
 
+### 2.8 — Source of Truth (Q3)
+
+#### 2.8.1 — The user's own research material — **authoritative, location-variable**
+
+Research ideas, methodology drafts, research questions, notes and manuscript drafts
+are **the authoritative statement of what the user is currently working on**. They may
+live in Google Drive, local project files, Overleaf exports, or the relevant research
+Git repository — **it varies by project.**
+
+> ⛔ **Never assume a location is authoritative.** At the start of a research task,
+> **ask which document, folder, repository, or branch is the current version** unless
+> it is already unambiguous. (BR-9)
+
+> ⛔ **Positioning is anchored on the actual document, not on keywords.** Read the
+> current research idea or methodology **first**, and judge relevance against *that*.
+> Ranking papers from broad terms like "CAR-T", "healthcare" or "supply chain" is
+> precisely failure mode **F5**. (BR-10)
+
+#### 2.8.2 — Operational state vs intellectual output — **the BR-5 boundary**
+
+| | **Operational system state** | **Intellectual output** |
+|---|---|---|
+| **Examples** | screening status; relevant/irrelevant/uncertain verdict; reason for the decision; papers already shown in a digest; date last screened; research-interest profile; identifiers (DOI, Zotero key, OpenAlex ID, PMID, S2 ID) | BUILD notes; literature review notes; gap analyses; methodology comparisons; research interpretations; manuscript drafts; argument/positioning documents |
+| **Auto-update** | ✅ **allowed** — this is operational memory | ❌ **never** |
+| **Lives in** | `/state/` in this repo, machine-readable | nowhere by default; saved only on approval |
+| **Rule** | write freely | **BR-5** — review → confirm → *ask* whether to save → confirm path + branch |
+
+> **BR-5 is hereby scoped:** it governs **intellectual output only**. Operational
+> state is explicitly exempt. (User ruling, Q3.)
+
+State area, kept separate from research notes and manuscript content:
+
+```
+/state/
+    paper-registry.json     # screening verdicts, reasons, identifiers, dates
+    digest-history.json     # what has already been shown
+    research-profile.md     # active questions, methods, concepts, exclusions, priorities
+```
+
+#### 2.8.3 — Zotero write-back — **read-only in Stage 1 v1**
+
+Zotero is the source of truth for the literature library and its bibliographic
+organization. **In the first version of Stage 1, do not automatically modify Zotero.**
+
+Reading is free. **Ask for approval before** adding a newly discovered paper, changing
+tags, adding notes, moving papers between collections, or modifying metadata. (BR-12)
+
+> Limited automatic actions — e.g. a screening tag or a dedicated machine-managed
+> field — may be authorized **later, once screening is proven reliable**. That is a
+> **separate explicit decision**, not an assumption this build may make.
+
+#### 2.8.4 — Newly discovered papers — **staging, not auto-import**
+
+Externally discovered papers are held in a staging area. **Only after approval** is a
+paper added to Zotero. (BR-13) Each staging record carries:
+
+| Field | Meaning |
+|---|---|
+| title, authors, year | bibliographic core |
+| DOI / persistent identifier | reconciliation key |
+| source | where it was discovered |
+| relevance score or category | screening result |
+| short reason it may matter | **required** — justification, not a score alone |
+| screened? | whether screening has run |
+| accepted / rejected for Zotero | the user's decision |
+
+#### 2.8.5 — Authority when bibliographic sources conflict
+
+1. **No discovery database automatically overrides another.**
+2. **Reconcile on persistent identifiers, DOI first.**
+3. For bibliographic metadata, **prefer the final publisher / Crossref record** for the
+   published version when available.
+4. **Zotero is authoritative for personal organization** — collections, tags, notes,
+   reading status. OpenAlex, Semantic Scholar, PubMed and Consensus are **discovery
+   and enrichment sources, never replacements** for the library.
+5. A **preprint and its published article are versions of one research item**, not two
+   independent papers, wherever that can be established.
+6. ⛔ **On meaningful uncertainty — differing years, titles, versions, author lists —
+   flag the conflict. Never silently choose.** (BR-14)
+
+#### 2.8.6 — Research-interest profile
+
+Describes active research questions, current methodological interests, important
+concepts, **excluded topics**, and priority areas. The assistant **may suggest**
+updates as the research evolves, but **substantive changes require approval** — the
+profile directly determines future screening and digest decisions. (BR-15)
+
+#### 2.8.7 — Provenance requirement
+
+For every important literature judgment, it must eventually be answerable:
+
+- where the paper came from;
+- why it was considered relevant or irrelevant;
+- what evidence was actually inspected;
+- whether the user personally read it;
+- whether BUILD was completed;
+- whether it has already appeared in a digest;
+- whether it has been accepted into Zotero.
+
+> This is the operational form of invariant 11. These fields are **required columns of
+> `paper-registry.json`**, not optional metadata. (BR-16)
+
+---
+
 ### L — Link
 Verified connections: *none yet.* See `/memory/progress.md` for the probe table.
 
@@ -412,6 +516,31 @@ Set by Q2, binding from now:
   and state what additional access is required rather than silently designing around
   the gap.
 
+Set by Q3, binding from now:
+
+- **BR-9 — Ask which version is current.** Research material lives in different places
+  per project. At the start of a research task, ask which document, folder, repository
+  or branch is the current version unless it is already unambiguous.
+- **BR-10 — Anchor relevance on the document, not the keyword.** Read the current
+  research idea or methodology first and judge relevance against it. Broad-term
+  ranking ("CAR-T", "supply chain") is failure mode F5.
+- **BR-11 — Operational state auto-updates; intellectual output does not.** `/state/`
+  may be written freely. BR-5 governs intellectual output only (§2.8.2).
+- **BR-12 — Zotero is read-only in Stage 1 v1.** Ask before adding papers, changing
+  tags, adding notes, moving collections, or editing metadata. Automatic write-back is
+  a separate, later, explicit decision.
+- **BR-13 — Stage discovered papers; never auto-import.** New papers wait in staging
+  with a stated reason until the user accepts them into Zotero.
+- **BR-14 — Reconcile by identifier; flag conflicts.** DOI first; publisher/Crossref
+  record preferred for published metadata; Zotero authoritative for personal
+  organization; preprint + published article are one item in two versions. On
+  meaningful uncertainty, flag — never silently choose.
+- **BR-15 — Profile changes need approval.** The assistant may propose updates to the
+  research-interest profile; substantive changes require the user's approval because
+  they steer all future screening.
+- **BR-16 — Provenance is a schema requirement.** The seven provenance questions in
+  §2.8.7 are required fields of the paper registry, not optional metadata.
+
 ---
 
 ## 4. Architectural Invariants
@@ -449,6 +578,10 @@ CLAUDE.md          # this file — constitution + state
   findings.md      #   research, discoveries, constraints
   progress.md      #   work done, errors, tests, results
   decisions.md     #   architectural choices + reasoning
+/state/            # operational memory — machine-readable, auto-updatable (BR-11)
+  paper-registry.json
+  digest-history.json
+  research-profile.md
 /architecture/     # Layer A — SOPs (the "how-to")
 /execution/        # Layer T — scripts (the "engines")
 /.tmp/             # ephemeral workbench (contents gitignored)
@@ -477,4 +610,5 @@ When anything fails:
 | 2026-08-19 | Blueprint Q1 answered | North Star, success/failure criteria, capability roadmap recorded | n/a |
 | 2026-08-19 | Blueprint Q2 answered | Integration register §2.5; rules BR-5..BR-8 | n/a |
 | 2026-08-19 | Early reachability probe | §2.6 — Zotero + 4 discovery APIs unreachable from remote container; Consensus + WebSearch green | n/a |
+| 2026-08-19 | Blueprint Q3 answered | §2.8 source-of-truth model; `/state/` defined; BR-9..BR-16; BR-5 scoped to intellectual output | n/a |
 | 2026-08-19 | Runtime target decided | ☁ cloud environment (D-015); Zotero Web API activated as the user's stated fallback; §2.7 prerequisites raised | n/a |

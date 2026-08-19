@@ -118,3 +118,25 @@ Nothing can be verified in Phase L until the egress policy is widened and a new
 session started. Blueprint continues in parallel: Q3–Q5 do not depend on P1–P3.
 
 **Next action:** Blueprint Q3 (Source of Truth).
+
+## 2026-08-19 — Blueprint Q3 answered
+
+**Done**
+- Recorded Q3 into CLAUDE.md §2.8 (seven subsections) and rules BR-9..BR-16.
+- Scoped BR-5 explicitly: operational state auto-updates, intellectual output does not
+  (§2.8.2). This resolves the contradiction between BR-5 and capability 1d flagged
+  before the question was asked.
+- Defined `/state/` in the repository map: `paper-registry.json`,
+  `digest-history.json`, `research-profile.md`.
+- Fixed section ordering in CLAUDE.md (§2.8 had been inserted ahead of §2.7).
+- Decisions D-016..D-021 recorded.
+
+**Errors hit:** section-ordering slip in the CLAUDE.md edit; corrected in place.
+
+**Tests run:** none — still no logic. G0 remains closed pending Q4–Q5.
+
+**Result:** Input side of the Data Schema is now largely determined: the anchor
+document, the paper registry fields, the staging record fields, and the provenance
+fields all come from Q3. The output side waits on Q4.
+
+**Next action:** Blueprint Q4 (Delivery Payload).

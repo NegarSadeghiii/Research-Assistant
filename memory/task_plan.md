@@ -1,6 +1,6 @@
 # Task Plan — Research-Assistant
 
-**Status:** 🔴 HALTED in Phase B (Blueprint) discovery. Q1–Q2 answered, Q3–Q5 open.
+**Status:** 🔴 HALTED in Phase B (Blueprint) discovery. Q1–Q3 answered, Q4–Q5 open.
 **Runtime target:** ☁ cloud environment (D-015, decided 2026-08-19).
 **⚠ Blocked on user actions:** CLAUDE.md §2.7 P1–P3 — egress allowlist, Zotero
 credentials, OpenAlex key. Blueprint Q3–Q5 can proceed in parallel.
@@ -15,7 +15,7 @@ credentials, OpenAlex key. Blueprint Q3–Q5 can proceed in parallel.
 - [x] Directory scaffold created (`/architecture/`, `/execution/`, `/.tmp/`)
 - [x] **Q1 — North Star:** ✅ answered — recorded verbatim in CLAUDE.md §2.1–2.3
 - [x] **Q2 — Integrations:** ✅ answered — CLAUDE.md §2.5 register; BR-5..BR-8 recorded
-- [ ] **Q3 — Source of Truth:** where the primary data lives
+- [x] **Q3 — Source of Truth:** ✅ answered — CLAUDE.md §2.8; `/state/` defined; BR-9..BR-16
 - [ ] **Q4 — Delivery Payload:** how and where the final result lands
 - [ ] **Q5 — Behavioral Rules:** tone, must-dos, must-nots, refusal triggers
 - [ ] Data Schema (Input → Output) written into CLAUDE.md
@@ -64,8 +64,7 @@ Scoped from Q1. Not planned in detail until G0 closes.
 ## Open Questions Blocking Progress
 1. ✅ ~~Runtime target~~ — resolved: cloud environment (D-015). Superseded by the
    §2.7 prerequisites, which are user actions rather than open questions.
-2. **Q3 — Source of Truth:** is Zotero authoritative, and where do the user's own
-   ideas / methodology / drafts / research questions live?
+2. ✅ ~~Q3~~ — answered.
 3. **Q4 — Delivery Payload:** shape and destination of screening reports,
    positioning briefs, and the monitoring digest.
 4. **Q5 — Behavioral Rules:** BUILD session boundary, challenge intensity, refusal
