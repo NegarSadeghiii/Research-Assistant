@@ -345,3 +345,39 @@ readable. No OCR problem. Recorded as D-041 (mixed-evidence screening) and D-042
 **Tests:** 21/21 validator, 9/9 classification, 12/12 env parsing.
 
 **Next:** BR-25 audit of the existing CAR-T project, then `SOP-003-screening`.
+
+## 2026-08-19 — Phase S begun: screening report renderer
+
+**Done**
+- `SOP-004-payload-rendering.md` — written before the code, per invariant 3. Its
+  binding constraint: a renderer holds **no domain logic**. It reads records and lays
+  them out; it never computes a verdict, infers a category, or adds bibliographic
+  detail. This makes every renderer a pure function from records to a file, testable
+  with synthetic records alone.
+- `execution/render_screening_report.py` — self-contained HTML, no external assets,
+  light/dark aware, print-friendly.
+- `execution/tests/test_render_screening_report.py` — **28 tests**.
+
+**Three properties the tests defend**, because they are what would make the report
+dishonest:
+1. **Evidence strength is visible per record** (D-041). A verdict from
+   `["title","abstract"]` is labelled *metadata only*; one from
+   `["title","abstract","introduction","conclusion"]` is labelled *full text*. The
+   reader can see which is weaker without being told.
+2. **Rejections are retained with their reasons** (BR-20) — tested by asserting every
+   record reaches the page and the irrelevant record's reason is present.
+3. **Non-citable records are marked as candidates** (§3.0) — V5 and V6 flags reach the
+   page with their reasons, and a conflicted record shows both disputed values rather
+   than a resolved one.
+
+Also tested: HTML escaping (a `<script>` title is escaped, not executed), empty batches,
+missing optional fields rendering as `—` rather than being inferred, long author lists
+truncated visually while the registry stays intact, and non-ASCII titles.
+
+**Design note.** Tallies are counted from the same records the page displays, in one
+pass. An earlier sketch computed them separately, which would have created a second
+place where "how many are relevant" is decided — and two places can disagree.
+
+**Tests:** 21 validator + 9 classification + 12 env + 28 renderer = **70 passing**.
+
+**Next:** user sign-off on the report (G2 condition), then digest / brief / BUILD note.

@@ -86,7 +86,7 @@ and needs the user's current methodology document (BR-9).
 |---|---|---|
 | **G0 — Blueprint** | Q1–Q5 answered, Data Schema below filled, user approves | ✅ **CLOSED 2026-08-19** — schema confirmed by user |
 | **G1 — Link** | Every credential probed green, logged in `progress.md` | ✅ **CLOSED 2026-08-19** — 4/4 required green locally |
-| **G2 — Stylize** | Every output has a verify command; user signs off | ⏸ blocked by G1 |
+| **G2 — Stylize** | Every output has a verify command; user signs off | 🟡 **1 of 4 payloads built** — screening report done, awaiting sign-off |
 | **G3 — Trigger** | Firing mechanism live and documented below | ⏸ blocked by G2 |
 
 ~~While G0 is open, writing logic into `/execution/` is forbidden.~~ **G0 closed
@@ -896,6 +896,15 @@ python3 execution/measure_zotero_coverage.py   # BR-8 / P4 coverage measurement
 | **T — Tools** | `/execution/` | atomic, deterministic, individually testable scripts |
 
 ### S — Stylize
+**Screening report built** — `execution/render_screening_report.py`, SOP-004, 28 tests.
+Renders evidence strength per record (D-041), retains rejections (BR-20), and marks
+non-citable records as candidates (§3.0). Digest, positioning brief and BUILD note
+skeleton remain.
+
+```
+python3 execution/render_screening_report.py --demo --out .tmp/demo.html
+```
+
 Formatting rules per payload are fixed by §2.9. Detailed templates (HTML report
 layout, DOCX structure, Markdown note skeleton) are authored in Phase S and must each
 ship with a verify command (invariant 8).
@@ -1147,6 +1156,7 @@ When anything fails:
 | 2026-08-19 | Early reachability probe | §2.6 — Zotero + 4 discovery APIs unreachable from remote container; Consensus + WebSearch green | n/a |
 | 2026-08-19 | Blueprint Q3 answered | §2.8 source-of-truth model; `/state/` defined; BR-9..BR-16; BR-5 scoped to intellectual output | n/a |
 | 2026-08-19 | Blueprint Q4 answered | §2.9 four payloads/paths/formats; §2.10 open items O1–O3; BR-17..BR-20 | n/a |
+| 2026-08-19 | Phase S begun | SOP-004 payload rendering; screening report renderer + 28 tests | SOP-004 |
 | 2026-08-19 | Existing-project entry rule | §2.4c audit-first entry; BR-25 | n/a |
 | 2026-08-19 | Research lifecycle specified | §2.4b nine stages + gating; BR-23, BR-24 | n/a |
 | 2026-08-19 | **G0 CLOSED** — Data Schema confirmed | `/execution/` unlocked | n/a |

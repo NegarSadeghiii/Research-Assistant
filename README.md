@@ -19,7 +19,7 @@ authority — code obeys it, and a logic change updates it *before* the code.
 |---|---|
 | ✅ **G0 — Blueprint** | closed 2026-08-19. Requirements, data schema, and 25 behavioural rules confirmed |
 | ✅ **G1 — Link** | closed 2026-08-19. Zotero, OpenAlex, PubMed, Crossref verified live |
-| ⬜ **G2 — Stylize** | not started. Payload templates unwritten |
+| 🟡 **G2 — Stylize** | screening report built and tested; digest, brief and BUILD note pending |
 | ⬜ **G3 — Trigger** | not started. No scheduled runs |
 
 ### What works today
@@ -31,7 +31,10 @@ authority — code obeys it, and a logic change updates it *before* the code.
   introductions and conclusions or is confined to metadata.
 - **A registry validator** enforcing nine rules that reject unsupportable records at
   write time.
-- **42 passing tests.**
+- **A screening-report renderer** that shows, per record, which sections were actually
+  read — so a metadata-only verdict *looks* weaker than a full-text one without any
+  disclaimer.
+- **70 passing tests.**
 
 ### What does not exist yet
 
@@ -101,6 +104,9 @@ python3 execution/validate_registry.py                     # validate the regist
 python3 execution/tests/test_validate_registry.py          # 21 tests
 python3 execution/tests/test_probe_classification.py       #  9 tests
 python3 execution/tests/test_env_loading.py                # 12 tests
+python3 execution/tests/test_render_screening_report.py    # 28 tests
+
+python3 execution/render_screening_report.py --demo --out .tmp/demo.html   # see a report
 ```
 
 Every tool prints one line of JSON to stdout and human narration to stderr, and exits
