@@ -235,3 +235,39 @@ which persists independently of this repository. Rotating both keys once the pip
 is confirmed working is the clean end state. Zotero keys are revocable at
 <https://www.zotero.org/settings/keys>; OpenAlex keys at
 <https://openalex.org/settings/api>.
+
+## 2026-08-19 — G0 CLOSED; Phase A SOPs + Phase L tooling built
+
+**Done**
+- User confirmed the Data Schema → **G0 closed**. `/execution/` unlocked.
+- Wrote SOPs **before** code (invariant 3):
+  - `SOP-000-conventions.md` — exit codes, output contract, credential and file rules
+  - `SOP-001-connection-probes.md` — probe logic, edge cases, the P4 coverage measurement
+  - `SOP-002-registry-validation.md` — V1–V9, rejection vs non-citable distinction
+- Built Layer T:
+  - `execution/probes/_common.py` — env loading, error classification, output contract
+  - five atomic probes: zotero, openalex, semantic_scholar, pubmed, crossref
+  - `execution/probes/run_all.py` — status table, G1 gate check, evidence to `/.tmp/`
+  - `execution/measure_zotero_coverage.py` — the BR-8 / P4 measurement
+  - `execution/validate_registry.py` — V1–V9 enforcement
+- Initialized `/state/`: empty registry, empty digest history, profile template.
+
+**Tests run**
+
+| Suite | Result |
+|---|---|
+| `execution/tests/test_validate_registry.py` | ✅ **21/21 passed** |
+| `execution/tests/test_probe_classification.py` | ✅ **9/9 passed** |
+| `execution/validate_registry.py` on the initialized registry | ✅ valid, 0 records |
+| `execution/probes/run_all.py` | ⛔ **5/5 blocked**, exit 1 — correct report of a true state |
+
+**Errors hit:** none in the tooling. The five probe blocks are the environment's
+egress policy, correctly classified as `blocked` (exit 2) rather than `red`.
+
+**Result:** Everything buildable without network access is built and verified. G1
+cannot pass until §2.7 P1 lands. The probe suite is ready to run the moment it does.
+
+**Design note.** The coverage measurement was split out of the Zotero probe into its
+own tool: a probe answers "is the link up?", a coverage measurement answers "is the
+content sufficient?" — different questions, different failure meanings (invariant 4).
+SOP-001 amended accordingly.

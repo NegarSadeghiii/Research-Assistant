@@ -6,8 +6,8 @@
 
 **Build protocol:** B.L.A.S.T. (Blueprint → Link → Architect → Stylize → Trigger)
 **Build layers:** A.N.T. (Architecture → Navigation → Tools)
-**Current state:** 🟡 **Phase B — Q1–Q5 ALL ANSWERED.** G0 awaits the Data Schema
-(§1) and the user's approval.
+**Current state:** 🟢 **G0 CLOSED.** Phase L in progress — probes written, awaiting
+the egress allowlist (§2.7 P1) before any link can be verified.
 **Runtime target:** ☁ **this cloud environment** (decided 2026-08-19, D-015).
 **⚠ Two user actions are prerequisites for G1** — egress allowlist + Zotero Web API
 credentials. See §2.7.
@@ -18,19 +18,22 @@ credentials. See §2.7.
 
 | Gate | Condition to pass | Status |
 |---|---|---|
-| **G0 — Blueprint** | Q1–Q5 answered, Data Schema below filled, user approves | 🟡 **5/5 answered, schema drafted — awaiting approval** |
-| **G1 — Link** | Every credential probed green, logged in `progress.md` | ⏸ blocked by G0 |
+| **G0 — Blueprint** | Q1–Q5 answered, Data Schema below filled, user approves | ✅ **CLOSED 2026-08-19** — schema confirmed by user |
+| **G1 — Link** | Every credential probed green, logged in `progress.md` | 🔴 **OPEN** — blocked by §2.7 P1 (egress allowlist) |
 | **G2 — Stylize** | Every output has a verify command; user signs off | ⏸ blocked by G1 |
 | **G3 — Trigger** | Firing mechanism live and documented below | ⏸ blocked by G2 |
 
-**While G0 is open, writing logic into `/execution/` is forbidden.**
+~~While G0 is open, writing logic into `/execution/` is forbidden.~~ **G0 closed
+2026-08-19 — Layer T is unlocked.** Phase A/T work proceeds; nothing may be declared
+*verified* until G1 closes.
 
 ---
 
 ## 1. Data Schema (Data-First Rule)
 
-> **Status: 🟡 DRAFTED, AWAITING USER APPROVAL.** Derived from Q3 (§2.8) and Q4 (§2.9).
-> Coding begins only once this is confirmed. No `/execution/` file may be written first.
+> **Status: ✅ CONFIRMED BY USER 2026-08-19.** Derived from Q3 (§2.8) and Q4 (§2.9).
+> This is now the binding contract. A change to it updates this section **before**
+> any code in `/execution/`.
 
 ### 1.1 — Core entity: the paper record
 
@@ -717,16 +720,25 @@ confirmed in Phase T.
 ---
 
 ### L — Link
-Verified connections: *none yet.* See `/memory/progress.md` for the probe table.
+**Probe suite built and runnable.** Current result: **5/5 blocked** by the egress
+policy — a correct report of a true environment state, not a tool failure. No link is
+verified; G1 stays open until §2.7 P1 lands.
+
+```
+python3 execution/probes/run_all.py            # G1 gate check
+python3 execution/measure_zotero_coverage.py   # BR-8 / P4 coverage measurement
+```
 
 ### A — Architect
+**SOPs authored:** `SOP-000-conventions` · `SOP-001-connection-probes` ·
+`SOP-002-registry-validation`.
+**Tools built:** 5 probes + `run_all` · `measure_zotero_coverage` ·
+`validate_registry`, with 30 passing tests.
 | Layer | Location | Contents |
 |---|---|---|
 | **A — Architecture** | `/architecture/` | SOPs: goal, inputs, tool logic, edge cases |
 | **N — Navigation** | routing layer | reasoning + ordering; calls tools, does no heavy work itself |
 | **T — Tools** | `/execution/` | atomic, deterministic, individually testable scripts |
-
-*No SOPs or tools authored yet.*
 
 ### S — Stylize
 Formatting rules per payload are fixed by §2.9. Detailed templates (HTML report
@@ -980,6 +992,8 @@ When anything fails:
 | 2026-08-19 | Early reachability probe | §2.6 — Zotero + 4 discovery APIs unreachable from remote container; Consensus + WebSearch green | n/a |
 | 2026-08-19 | Blueprint Q3 answered | §2.8 source-of-truth model; `/state/` defined; BR-9..BR-16; BR-5 scoped to intellectual output | n/a |
 | 2026-08-19 | Blueprint Q4 answered | §2.9 four payloads/paths/formats; §2.10 open items O1–O3; BR-17..BR-20 | n/a |
+| 2026-08-19 | **G0 CLOSED** — Data Schema confirmed | `/execution/` unlocked | n/a |
+| 2026-08-19 | Phase A + L build | 3 SOPs, 5 probes, coverage tool, registry validator, `/state/` initialized; 30 tests pass; probes report 5/5 egress-blocked | SOP-000/001/002 |
 | 2026-08-19 | Blueprint Q5 answered | §3 rebuilt — non-overridable verification hard stop (§3.0), 15 prohibitions P1–P15, tone/uncertainty/verbosity, refusal policy | n/a |
 | 2026-08-19 | O1–O3 ruled | saved = write+commit+push; US Eastern, 07:00 assumed; dedicated branch for unattended runs; BR-21, BR-22 | n/a |
 | 2026-08-19 | Runtime target decided | ☁ cloud environment (D-015); Zotero Web API activated as the user's stated fallback; §2.7 prerequisites raised | n/a |

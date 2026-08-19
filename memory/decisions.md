@@ -339,3 +339,33 @@ bearing:
    anchor document a *schema error*, so F5 becomes structurally unreachable rather
    than merely discouraged. This is invariant 2 applied to the failure modes: the
    scripts decide, the model routes.
+
+### D-033 — Probes classify BLOCKED separately from RED
+**Date:** 2026-08-19
+**Decision:** Exit code 2 (blocked by egress policy) is distinct from exit code 1
+(service reached but refused). `classify_error()` separates them by whether the
+failure occurred at CONNECT or in an HTTP response.
+**Reason:** Both surface as "403". Conflating them would send the user to regenerate
+a perfectly good API key when the real problem is a network policy — a diagnosis that
+already cost real effort during the pre-probe. `/root/.ccr/README.md` also requires
+policy denials be reported rather than retried, which is only possible if the tool can
+recognise one. Nine tests hold the distinction in place.
+
+### D-034 — Validation distinguishes "rejected" from "not usable as evidence"
+**Date:** 2026-08-19
+**Decision:** V1–V4, V7 and V9 reject a record outright. V5 and V6 instead mark it
+`usable_as_evidence: false` while keeping it in the registry.
+**Reason:** This is §3.0's candidate-vs-support distinction made mechanical. A paper
+with an unverified identifier, or with an unresolved bibliographic conflict, is still
+something the user may want to see — discarding it would lose information. What it may
+not do is enter the evidence base. Rejecting it entirely would violate the spirit of
+§3.0 as much as citing it would.
+
+### D-035 — Coverage measurement is a separate tool from the connection probe
+**Date:** 2026-08-19
+**Decision:** `measure_zotero_coverage.py` is its own script, not a `--coverage` flag
+on `probe_zotero.py`. SOP-001 amended before the code was written.
+**Reason:** Invariant 4 — one job per tool. "Is the link up?" and "is the content
+sufficient?" are different questions whose failures mean different things: the first
+blocks G1, the second triggers the BR-8 halt-and-report. Merging them would make the
+exit code ambiguous.
