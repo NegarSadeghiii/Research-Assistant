@@ -485,6 +485,47 @@ the **build order** in which capabilities are constructed. They are not the same
 
 ---
 
+### 2.4c — Existing-project entry rule (user specification)
+
+**The lifecycle does not require starting at Stage 1 when substantial research
+already exists.**
+
+When the user provides an existing project:
+
+1. **Determine which lifecycle stages are already complete.** Ask; do not infer from
+   what happens to be visible.
+2. **Audit the available outputs of those stages** for: internal consistency,
+   unresolved assumptions, missing evidence, and reproducibility.
+3. ⛔ **Do not redo completed stages without a reason.** A stage that holds up under
+   audit is done. Re-running it is waste, and it is also a way of quietly substituting
+   the assistant's judgment for work the user already did.
+4. ⛔ **Do not advance to a later stage until material unresolved issues in earlier
+   stages have been surfaced and the user approves the transition.**
+
+#### How this fits with BR-23 — not a loophole
+
+BR-23 forbids *skipping* a stage that holds an unresolved research decision. This rule
+permits *entering late*. They are compatible, and the distinction is load-bearing:
+
+| | Skipping (forbidden) | Entering late (permitted) |
+|---|---|---|
+| The stage's work | never done | already done by the user |
+| Its outputs | do not exist | exist and are auditable |
+| What the assistant knows | nothing — it would proceed on inference | what the audit found |
+
+The audit is what makes the difference. Entering at Stage 5 having read and checked
+Stages 1–4 is a supported entry point. Entering at Stage 5 *without* that audit is
+BR-23's failure wearing different clothes — code implementing a formulation nobody
+verified (F10, F11).
+
+> **The audit is not a formality and it is not a rubber stamp.** Its output is a
+> statement of what was checked and what was found, including "this assumption is
+> unresolved" and "this result is not reproducible from what is available." P15
+> applies with full force: the audit optimizes for whether the existing work survives
+> scrutiny, not for agreeing that it is finished.
+
+---
+
 ### 2.5 — Integration Register (Q2)
 
 **Primary literature library**
@@ -1091,6 +1132,7 @@ When anything fails:
 | 2026-08-19 | Early reachability probe | §2.6 — Zotero + 4 discovery APIs unreachable from remote container; Consensus + WebSearch green | n/a |
 | 2026-08-19 | Blueprint Q3 answered | §2.8 source-of-truth model; `/state/` defined; BR-9..BR-16; BR-5 scoped to intellectual output | n/a |
 | 2026-08-19 | Blueprint Q4 answered | §2.9 four payloads/paths/formats; §2.10 open items O1–O3; BR-17..BR-20 | n/a |
+| 2026-08-19 | Existing-project entry rule | §2.4c audit-first entry; BR-25 | n/a |
 | 2026-08-19 | Research lifecycle specified | §2.4b nine stages + gating; BR-23, BR-24 | n/a |
 | 2026-08-19 | **G0 CLOSED** — Data Schema confirmed | `/execution/` unlocked | n/a |
 | 2026-08-19 | Phase A + L build | 3 SOPs, 5 probes, coverage tool, registry validator, `/state/` initialized; 30 tests pass; probes report 5/5 egress-blocked | SOP-000/001/002 |

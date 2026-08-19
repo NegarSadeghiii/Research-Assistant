@@ -404,3 +404,24 @@ expensive kind of wrong: invisible, reusable, and inherited.
 P1..P15, §3.0, the nine-stage gating) is complete, coherent and approval-backed, and
 depends on no network access. That is the natural first skill to extract — but after
 proof, not before.
+
+### D-040 — Existing projects are entered by audit, not by restart (BR-25)
+**Date:** 2026-08-19
+**Decision:** Recorded the user's existing-project entry rule as CLAUDE.md §2.4c and
+BR-25: establish which lifecycle stages are complete, audit their outputs, do not redo
+completed stages without reason, and do not advance past unresolved material issues
+without the user's approval.
+**Reason:** User specification, and it closes a real gap. The nine-stage lifecycle as
+written implied a cold start, which would have been wrong for this user — the CAR-T
+work already has published results, a methodology, and code across roughly ten
+branches. Insisting on Stage 1 would have wasted effort and, worse, invited the
+assistant to re-derive conclusions the user had already reached and defended.
+**Why it is not a BR-23 loophole:** BR-23 forbids *skipping* a stage holding an
+unresolved decision; BR-25 permits *entering late* at a stage whose predecessors have
+been audited. The audit supplies exactly what skipping lacks — knowledge of what the
+earlier stages actually concluded. Entering at Stage 5 without the audit is BR-23's
+failure under another name.
+**Guard against the obvious abuse:** an audit that always concludes "looks complete"
+is worthless. P15 governs — the audit optimizes for whether the existing work survives
+scrutiny, and it must be able to return "this assumption is unresolved" or "this
+result is not reproducible from what is available."
