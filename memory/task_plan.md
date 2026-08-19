@@ -1,6 +1,7 @@
 # Task Plan — Research-Assistant
 
-**Status:** 🟡 Phase B complete pending approval. Q1–Q5 all answered, schema drafted.
+**Status:** 🟢 G0 CLOSED. Phase A built, Phase L blocked on user action P1.
+**Resume instructions:** see the "NEXT SESSION — START HERE" block at the top of CLAUDE.md.
 **Runtime target:** ☁ cloud environment (D-015, decided 2026-08-19).
 **⚠ Blocked on user actions:** CLAUDE.md §2.7 P1–P3 — egress allowlist, Zotero
 credentials, OpenAlex key. Blueprint Q3–Q5 can proceed in parallel.
@@ -20,7 +21,7 @@ credentials, OpenAlex key. Blueprint Q3–Q5 can proceed in parallel.
 - [x] **Q5 — Behavioral Rules:** ✅ answered — CLAUDE.md §3; hard stop §3.0; P1–P15
 - [x] Data Schema (Input → Output) written into CLAUDE.md §1 — 🟡 awaiting approval
 - [ ] Research prior art → log in `findings.md`
-- [ ] **GATE: user approves Blueprint**
+- [x] **GATE: user approves Blueprint** ✅ 2026-08-19 — schema confirmed
 
 ## Phase L — Link (Connectivity)
 - [ ] **P1 (user)** — ⛔ **SOLE REMAINING BLOCKER** — egress policy widened for the 6 required hosts (§2.7), new session started
@@ -33,9 +34,11 @@ credentials, OpenAlex key. Blueprint Q3–Q5 can proceed in parallel.
 - [ ] **GATE: no red links**
 
 ## Phase A — Architect (A.N.T. 3-layer)
-- [ ] **A** — SOP markdown per capability in `/architecture/`
+- [x] **A** — SOP-000 conventions, SOP-001 probes, SOP-002 registry validation
+- [ ] **A** — SOPs for screening / positioning / digest — **blocked on the coverage measurement**
 - [ ] **N** — Navigation/routing layer defined
-- [ ] **T** — Atomic, testable scripts in `/execution/`
+- [x] **T** — probes, coverage tool, registry validator (30 tests passing)
+- [ ] **T** — screening, discovery, digest tools — blocked on G1
 
 ## Phase S — Stylize (Refinement & Delivery)
 - [ ] Payload formatted for its destination

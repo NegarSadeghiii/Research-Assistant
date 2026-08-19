@@ -14,6 +14,47 @@ credentials. See §2.7.
 
 ---
 
+## ▶ NEXT SESSION — START HERE
+
+**State as of 2026-08-19:** G0 closed. Phase A SOPs and the Phase L probe suite are
+built and tested (30 tests passing). **No external link is verified.** The single
+blocker is the egress allowlist (§2.7 P1) — a user action, not a build task.
+
+### Step 1 — before starting a new session (user)
+Widen the environment's network egress policy to allow these hosts:
+
+```
+api.zotero.org           api.openalex.org        api.semanticscholar.org
+eutils.ncbi.nlm.nih.gov  api.crossref.org        doi.org
+```
+
+Optional: `export.arxiv.org`, `www.ebi.ac.uk`.
+Set on the **environment**, not the session — <https://code.claude.com/docs/en/claude-code-on-the-web>.
+⚠ **Then start a NEW session.** Policy binds at session start; changing it mid-session
+has no effect.
+
+### Step 2 — first commands in the new session
+```
+python3 execution/probes/run_all.py            # G1 gate check; expect 5/5 green
+python3 execution/measure_zotero_coverage.py --sample 25   # the BR-8 / P4 measurement
+```
+
+`.env` does **not** survive the container. Re-create it from `.env.example`; the
+Zotero and OpenAlex credentials must be supplied again.
+
+### Step 3 — the decision that gates everything after
+`measure_zotero_coverage.py` answers whether the library exposes real indexed full
+text or only metadata. **That answer decides the screening design.** If coverage is
+inadequate, BR-8 requires halting and reporting what further access is needed — do not
+design screening around metadata-only input.
+
+### Deferred by explicit user decision
+Packaging any of this as a reusable skill waits until one real screening run has
+worked end to end (D-037). The research-interest profile is still an empty template
+and needs the user's current methodology document (BR-9).
+
+---
+
 ## 0. Hard Gates
 
 | Gate | Condition to pass | Status |

@@ -271,3 +271,33 @@ cannot pass until §2.7 P1 lands. The probe suite is ready to run the moment it 
 own tool: a probe answers "is the link up?", a coverage measurement answers "is the
 content sufficient?" — different questions, different failure meanings (invariant 4).
 SOP-001 amended accordingly.
+
+## 2026-08-19 — Test review; skill packaging deferred; session handoff
+
+**Tests run for user review**
+
+| Suite | Result |
+|---|---|
+| `test_validate_registry.py` | ✅ 21/21 |
+| `test_probe_classification.py` | ✅ 9/9 |
+| Four realistic validator scenarios | ✅ 4/4 as specified |
+| `run_all.py` | ⛔ 5/5 blocked, exit 1 — correct report of a true state |
+
+The realistic scenarios demonstrated the load-bearing asymmetry: a paper with an
+unverified DOI is **kept as a candidate**, while a verdict reached from keywords with
+no anchor document is **rejected outright**. Information is never lost; only the claim
+to have verified it is refused (§3.0).
+
+**Stated plainly to the user:** there are no research results to evaluate yet. Nothing
+has read a paper from the library. What exists is guardrails and plumbing. What can be
+reviewed today is whether the *rules* match intent — a document review, not a demo.
+
+**Decision:** skill packaging deferred (D-037) until one real screening run works.
+
+**Handoff:** wrote a "NEXT SESSION — START HERE" block at the top of CLAUDE.md, which
+loads automatically in a fresh session. It carries the six allowlist hosts, the two
+first commands, the warning that `.env` does not survive the container, and the
+coverage measurement that gates the screening design.
+
+**Next action (user):** widen the egress policy, start a new session, re-create `.env`,
+run `run_all.py`.

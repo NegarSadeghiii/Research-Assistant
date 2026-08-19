@@ -388,3 +388,19 @@ back to a literature record.
 **Note on axes:** §2.4b is the *research process*; §2.4 is the *build order*. They are
 different axes and the mapping between them is recorded in §2.4b so neither is mistaken
 for the other. The current build target remains lifecycle stage 1.
+
+### D-037 — Skill packaging deferred until one real run has worked
+**Date:** 2026-08-19
+**Decision:** Do not package the literature pipeline, the research discipline, or the
+B.L.A.S.T. build process as a reusable skill yet. Revisit after the egress allowlist
+lands and a screening run has completed end to end against the real library.
+**Reason:** User's decision, and the right one. The system has never touched real data.
+The open question that matters most — whether the Zotero library exposes indexed full
+text or only metadata — decides whether screening reads introductions and conclusions
+or is confined to abstracts. Those are different systems with different SOPs. A skill
+built now would freeze that guess and carry it into every future project, which is the
+expensive kind of wrong: invisible, reusable, and inherited.
+**What is genuinely ready when the time comes:** the behavioral core (BR-1..BR-24,
+P1..P15, §3.0, the nine-stage gating) is complete, coherent and approval-backed, and
+depends on no network access. That is the natural first skill to extract — but after
+proof, not before.
