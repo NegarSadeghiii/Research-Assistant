@@ -178,3 +178,28 @@ open items. Both halves of the schema can be drafted once Q5 lands.
 item blocking G0 along with the Data Schema.
 
 **Next action:** Q5 (Behavioral Rules), then draft the Data Schema for approval.
+
+## 2026-08-19 — Blueprint Q5 answered; Data Schema drafted
+
+**Done**
+- Rebuilt CLAUDE.md §3 from Q5:
+  - §3.0 the non-overridable verification hard stop, with the user's verbatim
+    candidate-vs-support wording;
+  - §3.1 fifteen prohibitions P1–P15, each mapped to the failure mode it guards;
+  - §3.2 tone / uncertainty / verbosity (assistant-proposed, marked as such);
+  - §3.3 refusal policy table with an explicit overridable/not column.
+- Drafted §1 Data Schema: paper record (§1.1), nine validation rules (§1.2),
+  digest history (§1.3), research profile (§1.4), task input envelope (§1.5),
+  output payload table (§1.6).
+- Decisions D-030..D-032.
+
+**Tests run:** all three schema JSON blocks parsed with `json.loads` — 3/3 valid.
+That is the only thing in this repo currently verifiable by execution, and it passes.
+
+**Errors hit:** none.
+
+**Result:** 🟡 **G0 is one step from closing.** Q1–Q5 all answered, schema drafted.
+Remaining: the user's approval of the schema. Still zero files in `/execution/`.
+
+**Next action:** present the schema for approval. On approval → G0 closes → Phase L,
+which is itself blocked on §2.7 P1–P3 (egress allowlist, Zotero key, OpenAlex key).

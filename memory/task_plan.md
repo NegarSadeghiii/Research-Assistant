@@ -1,6 +1,6 @@
 # Task Plan — Research-Assistant
 
-**Status:** 🔴 HALTED in Phase B (Blueprint) discovery. Q1–Q4 answered, Q5 open.
+**Status:** 🟡 Phase B complete pending approval. Q1–Q5 all answered, schema drafted.
 **Runtime target:** ☁ cloud environment (D-015, decided 2026-08-19).
 **⚠ Blocked on user actions:** CLAUDE.md §2.7 P1–P3 — egress allowlist, Zotero
 credentials, OpenAlex key. Blueprint Q3–Q5 can proceed in parallel.
@@ -17,8 +17,8 @@ credentials, OpenAlex key. Blueprint Q3–Q5 can proceed in parallel.
 - [x] **Q2 — Integrations:** ✅ answered — CLAUDE.md §2.5 register; BR-5..BR-8 recorded
 - [x] **Q3 — Source of Truth:** ✅ answered — CLAUDE.md §2.8; `/state/` defined; BR-9..BR-16
 - [x] **Q4 — Delivery Payload:** ✅ answered — CLAUDE.md §2.9; open items O1–O3 in §2.10
-- [ ] **Q5 — Behavioral Rules:** tone, must-dos, must-nots, refusal triggers
-- [ ] Data Schema (Input → Output) written into CLAUDE.md
+- [x] **Q5 — Behavioral Rules:** ✅ answered — CLAUDE.md §3; hard stop §3.0; P1–P15
+- [x] Data Schema (Input → Output) written into CLAUDE.md §1 — 🟡 awaiting approval
 - [ ] Research prior art → log in `findings.md`
 - [ ] **GATE: user approves Blueprint**
 
@@ -67,5 +67,5 @@ Scoped from Q1. Not planned in detail until G0 closes.
 2. ✅ ~~Q3~~ — answered.
 3. ✅ ~~Q4~~ — answered. Three follow-ups remain open as O1–O3 (§2.10):
    save semantics, digest timezone, and the branch unattended runs push to.
-4. **Q5 — Behavioral Rules:** BUILD session boundary, challenge intensity, refusal
-   triggers, evidence-citation format.
+4. ✅ ~~Q5~~ — answered.
+5. **Awaiting: user approval of the Data Schema (§1)** — the last G0 condition.

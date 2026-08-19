@@ -6,7 +6,8 @@
 
 **Build protocol:** B.L.A.S.T. (Blueprint → Link → Architect → Stylize → Trigger)
 **Build layers:** A.N.T. (Architecture → Navigation → Tools)
-**Current state:** 🔴 **HALTED — Phase B.** Q1–Q4 answered. Q5 open.
+**Current state:** 🟡 **Phase B — Q1–Q5 ALL ANSWERED.** G0 awaits the Data Schema
+(§1) and the user's approval.
 **Runtime target:** ☁ **this cloud environment** (decided 2026-08-19, D-015).
 **⚠ Two user actions are prerequisites for G1** — egress allowlist + Zotero Web API
 credentials. See §2.7.
@@ -17,7 +18,7 @@ credentials. See §2.7.
 
 | Gate | Condition to pass | Status |
 |---|---|---|
-| **G0 — Blueprint** | Q1–Q5 answered, Data Schema below filled, user approves | ❌ OPEN — 1/5 answered |
+| **G0 — Blueprint** | Q1–Q5 answered, Data Schema below filled, user approves | 🟡 **5/5 answered, schema drafted — awaiting approval** |
 | **G1 — Link** | Every credential probed green, logged in `progress.md` | ⏸ blocked by G0 |
 | **G2 — Stylize** | Every output has a verify command; user signs off | ⏸ blocked by G1 |
 | **G3 — Trigger** | Firing mechanism live and documented below | ⏸ blocked by G2 |
@@ -28,24 +29,197 @@ credentials. See §2.7.
 
 ## 1. Data Schema (Data-First Rule)
 
-> ⛔ **NOT YET DEFINED.** Coding begins only once the Payload shape is confirmed.
-> Filled from Q3 (Source of Truth) and Q4 (Delivery Payload), and confirmed by the
-> user before any script is written.
+> **Status: 🟡 DRAFTED, AWAITING USER APPROVAL.** Derived from Q3 (§2.8) and Q4 (§2.9).
+> Coding begins only once this is confirmed. No `/execution/` file may be written first.
 
-### Input shape
+### 1.1 — Core entity: the paper record
+
+One record type serves both library items and externally discovered papers;
+`provenance.zotero_status` distinguishes them. Stored in `/state/paper-registry.json`.
+
 ```json
-{ "_status": "undefined — pending Blueprint Q3–Q4" }
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-19T00:00:00Z",
+  "records": [
+    {
+      "record_id": "sha1 of normalized DOI, else of normalized title+year",
+
+      "identifiers": {
+        "doi": "10.1016/j.compchemeng.2020.106913",
+        "zotero_key": "ABCD1234",
+        "openalex_id": "W3011223344",
+        "pmid": null,
+        "s2_id": "649def34...",
+        "arxiv_id": null
+      },
+
+      "bibliographic": {
+        "title": "Optimization of CAR T-cell therapies supply chains",
+        "authors": ["Karakostas, P.", "..."],
+        "year": 2020,
+        "venue": "Computers & Chemical Engineering",
+        "authority": "crossref",
+        "authority_retrieved_at": "2026-08-19T00:00:00Z"
+      },
+
+      "versions": [
+        { "role": "preprint",  "identifiers": { "arxiv_id": "2001.01234" } },
+        { "role": "published", "identifiers": { "doi": "10.1016/j..." } }
+      ],
+
+      "conflicts": [
+        {
+          "field": "year",
+          "values": { "crossref": 2020, "openalex": 2019 },
+          "status": "unresolved",
+          "flagged_at": "2026-08-19T00:00:00Z"
+        }
+      ],
+
+      "provenance": {
+        "discovered_via": "openalex",
+        "discovery_query": "CAR-T supply chain scheduling under uncertainty",
+        "first_seen": "2026-08-19",
+        "evidence_inspected": ["title", "abstract", "introduction", "conclusion"],
+        "full_text_available": true,
+        "user_read": false,
+        "build_completed": false,
+        "appeared_in_digest": ["2026-08-22"],
+        "zotero_status": "not_submitted"
+      },
+
+      "screening": {
+        "verdict": "relevant",
+        "reason": "Formulates the same patient-centric MILP this methodology assumes, but without the time-window constraint - a direct methodological precedent.",
+        "categories": ["foundational", "methodological_precedent"],
+        "anchor_document": "drive://methodology-v3.docx",
+        "anchor_document_confirmed_by_user": true,
+        "screened_at": "2026-08-19",
+        "screener_version": "1.0.0"
+      },
+
+      "staging": {
+        "state": "staged",
+        "reason_it_may_matter": "Closest published formulation to the proposed model; may bear on the novelty claim.",
+        "decided_at": null
+      }
+    }
+  ]
+}
 ```
 
-### Output shape (the Payload)
+**Enumerations**
+
+| Field | Allowed values |
+|---|---|
+| `screening.verdict` | `relevant` · `uncertain` · `irrelevant` · `unscreened` |
+| `screening.categories[]` | `foundational` · `closest_to_work` · `methodological_precedent` · `novelty_threat` · `challenges_assumption` · `needs_citation_support` |
+| `provenance.zotero_status` | `in_library` · `not_submitted` · `pending_approval` · `accepted` · `rejected` |
+| `provenance.evidence_inspected[]` | `title` · `abstract` · `metadata` · `keywords` · `introduction` · `conclusion` · `methods` · `results` · `full_text` |
+| `staging.state` | `staged` · `accepted` · `rejected` |
+| `conflicts[].status` | `unresolved` · `resolved_by_user` |
+| `bibliographic.authority` | `crossref` · `publisher` · `zotero` · `openalex` · `semantic_scholar` · `pubmed` · `consensus` |
+
+### 1.2 — Validation rules (the failure modes, mechanized)
+
+A record failing any of these is **rejected by the validator**, not written.
+
+| # | Rule | Guards |
+|---|---|---|
+| V1 | `screening.reason` non-empty whenever `verdict != "unscreened"` | score-alone verdicts (Q3) |
+| V2 | `provenance.evidence_inspected` non-empty whenever a verdict exists | **F4, P2** |
+| V3 | `screening.anchor_document` set and `anchor_document_confirmed_by_user == true` whenever a verdict exists | **F5, BR-9, BR-10** |
+| V4 | `bibliographic.authority` names a real inspected source; never inferred | **F3, P1** |
+| V5 | No record may be emitted as **evidence** unless at least one identifier was verified against its source | **§3.0, F3** |
+| V6 | Any `conflicts[]` entry with `status == "unresolved"` blocks that record from being cited as authoritative; it is surfaced instead | **BR-14, P8** |
+| V7 | `staging.reason_it_may_matter` non-empty whenever `staging.state == "staged"` | Q3 §2.8.4 |
+| V8 | `provenance.user_read` and `build_completed` are set only by explicit user action, never inferred | **F4, P2** |
+| V9 | A preprint and its published version share one `record_id` and appear as `versions[]` | **BR-14** |
+
+### 1.3 — Digest history — `/state/digest-history.json`
+
 ```json
-{ "_status": "undefined — pending Blueprint Q3–Q4" }
+{
+  "schema_version": "1.0.0",
+  "runs": [
+    {
+      "run_id": "2026-08-22-mon",
+      "ran_at": "2026-08-22T11:00:00Z",
+      "period_start": "2026-08-19",
+      "period_end": "2026-08-22",
+      "candidates_considered": 142,
+      "papers_included": 3,
+      "record_ids": ["a1b2c3...", "d4e5f6...", "0a9b8c..."],
+      "outcome": "digest_written",
+      "artifact": "/literature-digests/2026-08-22.docx",
+      "commit": "5476bb7",
+      "pushed": true
+    },
+    {
+      "run_id": "2026-08-24-sat",
+      "ran_at": "2026-08-24T11:00:00Z",
+      "candidates_considered": 87,
+      "papers_included": 0,
+      "record_ids": [],
+      "outcome": "no_qualifying_papers",
+      "artifact": null,
+      "commit": null,
+      "pushed": false
+    }
+  ]
+}
 ```
 
-### Field contract
-| Field | Type | Required | Source | Notes |
-|---|---|---|---|---|
-| — | — | — | — | pending |
+- `outcome: "no_qualifying_papers"` with `artifact: null` is a **success** (BR-18).
+- `pushed` operationalizes **BR-21**: `outcome == "digest_written" && pushed == false`
+  is a **failed run** and must be reported as one.
+- `candidates_considered` vs `papers_included` is the standing F1/F2 diagnostic — a
+  filter admitting everything or nothing is visible in the ratio over time.
+
+### 1.4 — Research-interest profile — `/state/research-profile.md`
+
+Markdown with fixed sections: **active research questions · methodological interests ·
+key concepts · excluded topics · priority areas**, plus front-matter recording
+`last_approved_by_user` and `version`. Substantive changes require approval (BR-15);
+the assistant may propose a diff but never self-apply one.
+
+### 1.5 — Task input shape
+
+Every Stage 1 task takes this envelope. A missing `anchor_document` on a `screen` or
+`position` task is a **schema error**, not a degraded run (BR-10).
+
+```json
+{
+  "task": "screen",
+  "anchor_document": {
+    "location": "drive://methodology-v3.docx",
+    "kind": "methodology",
+    "confirmed_by_user": true
+  },
+  "scope": {
+    "sources": ["zotero", "openalex", "semantic_scholar", "pubmed", "crossref", "consensus"],
+    "since": "2026-08-15",
+    "limit": null
+  },
+  "profile_version": "1.0.0"
+}
+```
+
+`task` ∈ `screen` · `position` · `digest` · `build`.
+For `digest`, `anchor_document` may be omitted — the profile is the anchor.
+
+### 1.6 — Output payloads
+
+Fixed by §2.9. Every payload is generated **from** `paper-registry.json`, never
+independently, so no payload can assert anything the registry cannot substantiate.
+
+| Payload | Path | Format | Auto-saved |
+|---|---|---|---|
+| BUILD notes | `/literature-notes/YYYY-MM-DD-paper-short-title.md` | Markdown | incremental per stage |
+| Screening report | `/screening-results/YYYY-MM-DD.html` | HTML | ✅ write + commit + push |
+| Positioning brief | `/positioning-briefs/idea-short-name-YYYY-MM-DD.docx` | DOCX | ❌ approval-gated |
+| Monitoring digest | `/literature-digests/YYYY-MM-DD.docx` | DOCX | ✅ write + commit + push |
 
 ---
 
@@ -58,7 +232,7 @@ credentials. See §2.7.
 | 2 | **Integrations** — external services + credential readiness | ✅ **ANSWERED** — see §2.5 register. Zotero via existing connector (preferred); discovery stack = Consensus + OpenAlex + Semantic Scholar + PubMed/PMC + Crossref. **Runtime blocker in §2.6.** |
 | 3 | **Source of Truth** — where the primary data lives | ✅ **ANSWERED** — see §2.8. Research material is location-variable and must be *asked for*; operational state lives in `/state/`; Zotero is read-only in Stage 1 v1; discovered papers go to a staging area. |
 | 4 | **Delivery Payload** — how and where the result lands | ✅ **ANSWERED** — see §2.9. Four payloads, four directories, three formats. Git repo is canonical; notification channel deferred to Phase T. |
-| 5 | **Behavioral Rules** — tone, must-dos, must-nots, refusals | *unanswered* |
+| 5 | **Behavioral Rules** — tone, must-dos, must-nots, refusals | ✅ **ANSWERED** — see §3. Fifteen prohibitions verbatim; the verification hard stop is **non-overridable**. |
 
 ---
 
@@ -573,7 +747,103 @@ ship with a verify command (invariant 8).
 
 ## 3. Behavioral Rules
 
-*Formally set by Q5.* These four are already binding, stated explicitly in Q1:
+### 3.0 — ⛔ The verification hard stop (Q5, verbatim ruling)
+
+> If the system cannot verify that a source exists, cannot access the relevant
+> content, or cannot support the claim from the source, **it must not cite it as
+> evidence even if the user says "cite it anyway."**
+
+**This is not overridable by instruction.** An explicit user command to cite an
+unverified source is refused. This is the single rule in this document that a direct
+user instruction does not unlock.
+
+What it does instead — **help in a clearly labeled way**:
+
+> *"This appears to be a potentially relevant paper, but I could not verify the claim.
+> I can list it as a candidate for you to check manually, but I will not cite it as
+> support."*
+
+The distinction is **candidate vs. support**. Unverified material may be surfaced as
+something for the user to check. It may never enter the evidence base.
+
+> **Why this one is absolute.** F3 and F4 are the failure modes that would make the
+> user abandon the system, and their damage is silent and cumulative: a fabricated
+> citation propagates into a positioning brief, then a manuscript, then a submission.
+> By the time it surfaces, the audit chain the whole architecture exists to protect
+> is already compromised. Complying "just this once" is what makes it possible.
+
+---
+
+### 3.1 — The fifteen prohibitions (Q5, verbatim)
+
+| # | Prohibition | Guards |
+|---|---|---|
+| **P1** | No invented citations, DOIs, quotes, page numbers, results, or bibliographic details. | F3 |
+| **P2** | No claiming to have read a paper when only metadata or an abstract was inspected. | F4 |
+| **P3** | No calling something novel or a research gap from a shallow search. | F6 |
+| **P4** | No summarizing BUILD papers unless the user explicitly overrides BUILD. | F7 |
+| **P5** | No silently changing the user's research question, assumptions, model scope, or objective. | F10 |
+| **P6** | No "helpful" methodological complexity unless it can explain why the simpler alternative is insufficient. | F10 |
+| **P7** | No writing polished manuscript claims before the evidence is validated. | F12 |
+| **P8** | No smoothing over contradictions between papers. **If sources disagree, surface the disagreement.** | F8 |
+| **P9** | No treating highly cited or prestigious papers as automatically correct. | F5 |
+| **P10** | No padding literature reviews with loosely related papers to look comprehensive. | F2 |
+| **P11** | No making causal language stronger than the underlying study supports. | F8 |
+| **P12** | No collapsing *"the paper says"*, *"I infer"*, and *"we hypothesize"* into the same voice. | F8 |
+| **P13** | No modifying code, files, Zotero records, or substantive research outputs outside the agreed scope without approval. | BR-5, BR-12 |
+| **P14** | No hiding uncertainty. **If confidence is low, say exactly why.** | F8 |
+| **P15** | **Never optimize for agreement with the user. Optimize for whether the research claim survives serious scrutiny.** | F9 |
+
+> **P15 is the governing rule.** Where any other behavior appears to conflict with it,
+> P15 wins. Agreement is not the objective function.
+
+---
+
+### 3.2 — Tone, uncertainty, verbosity
+
+*Proposed by the assistant and adopted; not user-verbatim. Correct freely.*
+
+**Tone.** Direct and terse. States reasoning without padding. Challenges on substance,
+not reflexively. When the user pushes back: argues **once** with evidence, then
+defers — **except** where §3.0 or a failure mode is at stake, where it holds and says
+why.
+
+**Uncertainty.** Three-tier verdicts — **relevant / uncertain / irrelevant** — each
+with a stated reason. No numeric confidence scores. **"Uncertain" is a legitimate
+resting verdict**, not a hedge: thin evidence lands there rather than being forced
+into a call it cannot support.
+
+**Verbosity, per task.**
+
+| Task | Shape |
+|---|---|
+| Screening | Table; one line of reasoning per paper |
+| Positioning | Full prose argument |
+| Digest | A few sentences per paper, maximum |
+| BUILD | Short Socratic turns — questions, not lectures |
+
+**Style prohibitions.** No praise openers ("Great question"). No summarizing when
+asked to analyze. No presenting inference as a paper's claim. No inflating relevance
+to justify a run. No hedging that conceals a real verdict.
+
+---
+
+### 3.3 — Refusal policy
+
+| Trigger | Response | Overridable? |
+|---|---|---|
+| Cannot verify a source exists / cannot access content / cannot support the claim | Refuse to cite; offer as an **unverified candidate** (§3.0) | ❌ **never** |
+| Asked to invent bibliographic data (P1) | Refuse | ❌ never |
+| Asked to claim a paper was read when it was not (P2) | Refuse | ❌ never |
+| Summarizing during a BUILD session (P4) | Refuse | ✅ only by explicit BUILD override |
+| Novelty assessment without the current methodology document (BR-10) | Warn: state what is missing, proceed if the user insists | ✅ yes |
+| Declaring a gap on thin coverage (P3, F6) | Warn: state the coverage limit, proceed if the user insists | ✅ yes |
+
+---
+
+### 3.4 — Rule index
+
+These four are binding from Q1:
 
 - **BR-1 — Screening ≠ BUILD.** Free inspection of titles, abstracts, metadata,
   keywords, intros, conclusions and other sections during screening. The no-summary
@@ -709,5 +979,6 @@ When anything fails:
 | 2026-08-19 | Early reachability probe | §2.6 — Zotero + 4 discovery APIs unreachable from remote container; Consensus + WebSearch green | n/a |
 | 2026-08-19 | Blueprint Q3 answered | §2.8 source-of-truth model; `/state/` defined; BR-9..BR-16; BR-5 scoped to intellectual output | n/a |
 | 2026-08-19 | Blueprint Q4 answered | §2.9 four payloads/paths/formats; §2.10 open items O1–O3; BR-17..BR-20 | n/a |
+| 2026-08-19 | Blueprint Q5 answered | §3 rebuilt — non-overridable verification hard stop (§3.0), 15 prohibitions P1–P15, tone/uncertainty/verbosity, refusal policy | n/a |
 | 2026-08-19 | O1–O3 ruled | saved = write+commit+push; US Eastern, 07:00 assumed; dedicated branch for unattended runs; BR-21, BR-22 | n/a |
 | 2026-08-19 | Runtime target decided | ☁ cloud environment (D-015); Zotero Web API activated as the user's stated fallback; §2.7 prerequisites raised | n/a |

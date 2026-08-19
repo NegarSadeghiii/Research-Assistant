@@ -296,3 +296,46 @@ Proposed name `automation/scheduled-output`, to be confirmed in Phase T.
 until reviewed, and it means an automation bug that produces a bad digest can be
 discarded by deleting a branch. Consistent with BR-6's instinct: automation does not
 get to assume the default branch.
+
+### D-030 — The verification hard stop is not overridable by user instruction
+**Date:** 2026-08-19
+**Decision:** If a source cannot be verified to exist, its content cannot be accessed,
+or the claim cannot be supported from it, the system does not cite it as evidence —
+**even on an explicit instruction to "cite it anyway."** It offers the item as an
+unverified candidate for manual checking instead.
+**Reason:** User ruling (Q5), stated verbatim in §3.0. This is the only rule in the
+constitution that a direct instruction does not unlock, and the asymmetry is
+deliberate: F3/F4 damage is silent and compounding. A fabricated citation propagates
+into a positioning brief, then a manuscript, then a submission, and by the time it
+surfaces the audit chain the architecture exists to protect is already broken. The
+labeled-candidate escape hatch means the user loses no information — only the
+false assurance that something was verified.
+
+### D-031 — Fifteen prohibitions recorded verbatim; P15 governs
+**Date:** 2026-08-19
+**Decision:** P1–P15 recorded verbatim in §3.1 and mapped to the failure modes they
+guard. Where any behavior appears to conflict with P15 ("never optimize for agreement
+with the user; optimize for whether the research claim survives serious scrutiny"),
+P15 wins.
+**Reason:** User specification (Q5). Several prohibitions extend beyond Stage 1 —
+manuscript claims (P7), code and scope changes (P13), causal overreach (P11) — so they
+are recorded as project-wide rules rather than Stage 1 rules. Five cover ground the
+F-list did not: contradiction-smoothing (P8), prestige bias (P9), causal inflation
+(P11), voice-collapsing (P12), and unjustified methodological complexity (P6).
+
+### D-032 — Data Schema drafted: one record type, nine validation rules
+**Date:** 2026-08-19
+**Decision:** A single paper-record type serves both library items and externally
+discovered papers, distinguished by `provenance.zotero_status`. Nine validation rules
+(V1–V9) reject non-conforming records at write time.
+**Reason:** Data-First (invariant 1) and the G0 gate. Two design choices are load-
+bearing:
+1. **One record type, not two.** A staged paper and a library paper are the same
+   research item at different points in a lifecycle. Two types would duplicate the
+   identifier and provenance logic and let the two copies diverge — precisely the
+   condition BR-14 exists to prevent.
+2. **Validation, not instruction.** V1–V9 convert behavioral rules into write-time
+   failures. V3 in particular makes a screening verdict without a user-confirmed
+   anchor document a *schema error*, so F5 becomes structurally unreachable rather
+   than merely discouraged. This is invariant 2 applied to the failure modes: the
+   scripts decide, the model routes.
