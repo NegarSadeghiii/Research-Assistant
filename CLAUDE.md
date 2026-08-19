@@ -6,7 +6,9 @@
 
 **Build protocol:** B.L.A.S.T. (Blueprint → Link → Architect → Stylize → Trigger)
 **Build layers:** A.N.T. (Architecture → Navigation → Tools)
-**Current state:** 🔴 **HALTED — Phase B.** Q1 answered. Q2–Q5 open.
+**Current state:** 🔴 **HALTED — Phase B.** Q1–Q2 answered. Q3–Q5 open.
+**⚠ Blocker:** primary data path (Zotero) is not reachable from the current runtime.
+See §2.6.
 
 ---
 
@@ -52,7 +54,7 @@
 | # | Question | Answer |
 |---|---|---|
 | 1 | **North Star** | ✅ **ANSWERED** — see §2.1. End-to-end research assistant: literature → defensible methodology → reproducible computation → validated results → publication-quality manuscript. **Build order starts with Literature Intelligence.** |
-| 2 | **Integrations** — external services + credential readiness | *unanswered* |
+| 2 | **Integrations** — external services + credential readiness | ✅ **ANSWERED** — see §2.5 register. Zotero via existing connector (preferred); discovery stack = Consensus + OpenAlex + Semantic Scholar + PubMed/PMC + Crossref. **Runtime blocker in §2.6.** |
 | 3 | **Source of Truth** — where the primary data lives | *unanswered* |
 | 4 | **Delivery Payload** — how and where the result lands | *unanswered* |
 | 5 | **Behavioral Rules** — tone, must-dos, must-nots, refusals | *unanswered* |
@@ -206,6 +208,80 @@ written for them until Stage 1 has landed its payload.**
 
 ---
 
+### 2.5 — Integration Register (Q2)
+
+**Primary literature library**
+
+| Service | Role | Access path | Credential | Stage |
+|---|---|---|---|---|
+| **Zotero** | Existing personal library — the primary source for screening | **Existing Zotero connector (Claude Desktop).** Preferred path. | already connected by user | 1 |
+
+> **Zotero Web API is explicitly NOT to be set up** unless the connector proves
+> insufficient during Phase L. If the connector exposes only metadata or incomplete
+> paper text, **halt and report what additional access is required** — never design
+> silently around missing content. (User instruction, Q2.)
+>
+> ⚠ Connector coverage is **unverified**: how much of each PDF it exposes, and whether
+> full text is searchable, must be tested in Phase L before any architecture decision.
+
+**External discovery stack** — multiple complementary sources; no single database is
+treated as complete.
+
+| # | Service | Role | Credential status | Stage |
+|---|---|---|---|---|
+| 1 | **Consensus** | Finding + evaluating relevant research | ✅ connected & enabled in session | 1 |
+| 2 | **OpenAlex** | Broad discovery, citation relationships, related works, author/venue metadata, snowballing | ⚠ API key required (obtainable) — see §2.6 | 1 |
+| 3 | **Semantic Scholar** | Paper search, citation graph, related papers, recommendations API (positive/negative seed examples) | obtainable | 1 |
+| 4 | **PubMed / PMC** | Clinical, biomedical, cell-therapy, CAR-T, survival, patient-outcome literature (NCBI E-utilities) | obtainable | 1 |
+| 5 | **Crossref** | Metadata + DOI validation layer; verifying bibliographic records, resolving papers across sources | public REST API | 1 |
+
+**Excluded / deferred**
+
+| Service | Decision | Reason (user, Q2) |
+|---|---|---|
+| Google Scholar | ❌ **excluded** | No official API; scraping rejected — system must rely on stable, reproducible access paths |
+| Scopus | ⏸ optional future | No institutional API credentials currently |
+| Web of Science | ⏸ optional future | No institutional API credentials currently |
+
+**GitHub**
+
+| Repo | Role | Stage |
+|---|---|---|
+| `NegarSadeghiii/CAR-T-Supply-Chain` | Computational research (~10 branches; the relevant branch varies by research question/experiment) | **3** |
+
+> **Recorded now, not built now.** GitHub is **not** an active Stage 1 dependency. Do
+> not build or probe GitHub workflows unless required to understand a research idea or
+> methodology document. See BR-5 and BR-6 below.
+
+---
+
+### 2.6 — ⚠ Runtime Reachability Findings (Phase L, run early)
+
+Probed 2026-08-19 from the Claude Code remote container. **These are measured, not assumed.**
+
+| Target | Result | Evidence |
+|---|---|---|
+| **Zotero connector** | ❌ **NOT REACHABLE** | Absent from this session's connector set (`ListConnectors` → Canva, Consensus, Gmail, Google Calendar, Google Drive). A Claude **Desktop**-local MCP server runs on the user's machine and has no network path from this cloud container. |
+| OpenAlex API | ❌ blocked | `CONNECT tunnel failed, 403` — egress policy denial |
+| Semantic Scholar API | ❌ blocked | `CONNECT tunnel failed, 403` |
+| PubMed E-utilities | ❌ blocked | `CONNECT tunnel failed, 403` |
+| Crossref API | ❌ blocked | `CONNECT tunnel failed, 403` |
+| WebFetch (any of the above) | ❌ blocked | `EGRESS_BLOCKED` — same policy governs WebFetch |
+| **Consensus MCP** | ✅ **working** | Live query returned real domain results, incl. the user's own 2025 WSC papers |
+| **WebSearch** | ✅ **working** | Uses a separate path from container egress |
+
+**Consequence:** deterministic `/execution/` scripts that call OpenAlex, Semantic
+Scholar, PubMed, or Crossref **cannot run in this environment as currently
+configured.** The runtime target must be decided before any tool is written —
+it determines the entire Layer-T design. ⛔ **Open decision, blocking G0.**
+
+**Verified external fact:** OpenAlex made API keys mandatory on **2026-02-13**;
+the polite pool was discontinued and the `mailto` parameter is no longer accepted.
+Free keys available at `openalex.org/settings/api`, with usage-based pricing above a
+daily free allowance. (Confirms the user's Q2 statement.)
+
+---
+
 ### L — Link
 Verified connections: *none yet.* See `/memory/progress.md` for the probe table.
 
@@ -243,6 +319,28 @@ Payload formatting rules: *pending Q4.*
   application-level similarity across adjacent literatures.
 - **BR-4 — Challenge, don't validate.** Actively seek the strongest work that could
   undermine the user's claim. Agreement without challenge is a defect (F9).
+
+Set by Q2, binding from now:
+
+- **BR-5 — Nothing is committed without explicit approval.** Stage 1 working material
+  (screening decisions, BUILD notes, literature comparisons, gap analyses, citation
+  candidates, literature-review drafts) is **never** automatically committed or saved
+  to a Git repository. After content is reviewed and confirmed, **ask** whether to save
+  it. If yes, **ask which repository, branch, and destination path** unless already
+  unambiguous. Never assume a draft, intermediate note, or unreviewed literature
+  assessment should be committed. Save only after explicit approval of **both** the
+  content **and** the destination.
+- **BR-6 — Never assume `main` is authoritative.** In the computational stage, ask
+  which branch is authoritative **before** reading code, extracting results, or making
+  changes to `CAR-T-Supply-Chain`. `main` is not presumed to hold the current research
+  version.
+- **BR-7 — Stable access paths only.** No scraping of sources that lack an official
+  API (explicitly: Google Scholar). Reproducibility of access is a requirement, not a
+  preference.
+- **BR-8 — Report missing access, don't route around it.** If a source exposes less
+  content than the task needs (e.g. metadata only where full text is required), halt
+  and state what additional access is required rather than silently designing around
+  the gap.
 
 ---
 
@@ -307,3 +405,5 @@ When anything fails:
 |---|---|---|---|
 | 2026-08-19 | Project initialized (Protocol 0) | Scaffold + memory + constitution | n/a |
 | 2026-08-19 | Blueprint Q1 answered | North Star, success/failure criteria, capability roadmap recorded | n/a |
+| 2026-08-19 | Blueprint Q2 answered | Integration register §2.5; rules BR-5..BR-8 | n/a |
+| 2026-08-19 | Early reachability probe | §2.6 — Zotero + 4 discovery APIs unreachable from remote container; Consensus + WebSearch green | n/a |

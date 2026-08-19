@@ -1,6 +1,7 @@
 # Task Plan — Research-Assistant
 
-**Status:** 🔴 HALTED in Phase B (Blueprint) discovery. Q1 answered, Q2–Q5 open.
+**Status:** 🔴 HALTED in Phase B (Blueprint) discovery. Q1–Q2 answered, Q3–Q5 open.
+**⚠ Blocking decision:** runtime target undecided — see D-014 and CLAUDE.md §2.6.
 **Build target:** Stage 1 — Literature Intelligence (see CLAUDE.md §2.4).
 **Blueprint approved:** NO — logic is forbidden in `/execution/` until this flips to YES.
 
@@ -11,7 +12,7 @@
 - [x] CLAUDE.md created as Project Constitution
 - [x] Directory scaffold created (`/architecture/`, `/execution/`, `/.tmp/`)
 - [x] **Q1 — North Star:** ✅ answered — recorded verbatim in CLAUDE.md §2.1–2.3
-- [ ] **Q2 — Integrations:** external services + credential readiness
+- [x] **Q2 — Integrations:** ✅ answered — CLAUDE.md §2.5 register; BR-5..BR-8 recorded
 - [ ] **Q3 — Source of Truth:** where the primary data lives
 - [ ] **Q4 — Delivery Payload:** how and where the final result lands
 - [ ] **Q5 — Behavioral Rules:** tone, must-dos, must-nots, refusal triggers
@@ -55,8 +56,9 @@ Scoped from Q1. Not planned in detail until G0 closes.
 | 1d | New-publication monitoring digest | Q2, Q4, Phase T |
 
 ## Open Questions Blocking Progress
-1. **Q2 — Integrations:** Zotero access method + credentials; discovery sources
-   beyond the library; where BUILD sessions and drafts live; GitHub repos (Stage 3).
+1. **⚠ RUNTIME TARGET (new, blocking).** Zotero connector absent from this session;
+   OpenAlex / Semantic Scholar / PubMed / Crossref all blocked by container egress
+   policy. Decide where Layer-T tools execute before any is written. See §2.6.
 2. **Q3 — Source of Truth:** is Zotero authoritative, and where do the user's own
    ideas / methodology / drafts / research questions live?
 3. **Q4 — Delivery Payload:** shape and destination of screening reports,

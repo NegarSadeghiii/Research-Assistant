@@ -70,3 +70,59 @@ activates only on explicit entry to a BUILD session.
 applied the no-summary rule during screening could not screen at all, and one that
 ignored it during BUILD would destroy the workflow's purpose (F7). The mode boundary
 must therefore be an explicit, inspectable state in the design, not a matter of tone.
+
+### D-009 — Zotero connector is the preferred path; Web API is a fallback, not a default
+**Date:** 2026-08-19
+**Decision:** Do not set up a Zotero Web API integration unless the existing connector
+is proven insufficient during Phase L.
+**Reason:** User instruction (Q2). Avoids a second credential surface and a second
+sync path for the same library. Fallback remains open if connector coverage of PDF
+full text turns out to be inadequate.
+
+### D-010 — Multi-source discovery; no single database treated as complete
+**Date:** 2026-08-19
+**Decision:** Stage 1 discovery uses Consensus + OpenAlex + Semantic Scholar +
+PubMed/PMC + Crossref, with Crossref as the DOI/metadata validation layer.
+**Reason:** User instruction (Q2), and it directly serves F1 (missing key papers) and
+the Q1 requirement to find work that uses *different terminology* for similar ideas —
+a single index's vocabulary and coverage biases would reproduce exactly that blind
+spot. Crossref as a validation layer is the mechanical guard for F3 (invented
+bibliographic data): a DOI that does not resolve is not emitted.
+
+### D-011 — No scraping; stable access paths only
+**Date:** 2026-08-19
+**Decision:** Google Scholar is excluded. Scopus and Web of Science are deferred as
+optional future integrations, not Stage 1 requirements.
+**Reason:** User instruction (Q2) — reproducible access. A scraper is also a
+permanent maintenance liability whose breakage is silent, which would surface as F1.
+
+### D-012 — Stage 1 output is never auto-committed (BR-5)
+**Date:** 2026-08-19
+**Decision:** Screening decisions, BUILD notes, comparisons, gap analyses, citation
+candidates and review drafts are not written to Git automatically. After review and
+confirmation, ask whether to save; if yes, ask repo/branch/path unless unambiguous.
+**Reason:** User instruction (Q2). Consistent with invariant 6 — these are
+intermediates until the user promotes them. It also protects the audit chain: an
+unreviewed literature assessment in Git would later be indistinguishable from an
+approved one, which is how F4 and F6 become permanent.
+
+### D-013 — Branch must be confirmed before reading computational work (BR-6)
+**Date:** 2026-08-19
+**Decision:** For `NegarSadeghiii/CAR-T-Supply-Chain` (~10 branches), always ask which
+branch is authoritative before reading code, extracting results, or making changes.
+Never assume `main`.
+**Reason:** User instruction (Q2). Reading the wrong branch produces results that
+cannot be traced to a research decision — F11 — and would silently corrupt the
+evidence chain the manuscript stage depends on.
+
+### D-014 — Runtime target is an open, blocking decision
+**Date:** 2026-08-19
+**Decision:** Do not write any `/execution/` tool until it is decided *where the tools
+run*: this remote container, the user's local machine, or a split.
+**Reason:** Measured in §2.6 — the Zotero connector is absent from this session and
+all four HTTP discovery APIs are blocked by the environment's egress policy (403 on
+CONNECT; `WebFetch` blocked identically). Only Consensus and WebSearch work here.
+A deterministic Layer-T script stack targeting OpenAlex/S2/PubMed/Crossref cannot
+execute in this environment as configured. Choosing the runtime after writing the
+tools would mean rewriting them; invariant 1 (Data-First) and the G0 gate both
+require settling this first.
