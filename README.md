@@ -35,13 +35,17 @@ authority — code obeys it, and a logic change updates it *before* the code.
   monitoring digest (DOCX), positioning brief (DOCX), BUILD session notes (Markdown).
   The screening report shows, per record, which sections were actually read, so a
   metadata-only verdict *looks* weaker than a full-text one without any disclaimer.
-- **160 passing tests**, including headless-browser tests that drive the report's
+- **188 passing tests**, including headless-browser tests that drive the report's
   filters and confirm no record is ever removed from the file.
+
+- **A screening pipeline** — fetch the library, extract an anchor document, and record
+  model-formed verdicts through a validating boundary that refuses anything
+  unsupportable.
 
 ### What does not exist yet
 
-Screening · positioning · novelty assessment · BUILD deep-reading · monitoring digests ·
-anything for code, experiments, results, or manuscripts.
+External discovery and novelty assessment · anything for code, experiments, results,
+or manuscripts · unattended scheduled runs.
 
 The literature capability is the current build target. The computational and manuscript
 stages are specified in `CLAUDE.md` §2.4b but deliberately unbuilt.
@@ -112,6 +116,7 @@ python3 execution/tests/test_env_loading.py                # 12 tests
 python3 execution/tests/test_render_screening_report.py    # 38 tests
 python3 execution/tests/test_report_interactivity.py       # 32 tests (headless Chromium)
 python3 execution/tests/test_render_payloads.py            # 46 tests
+python3 execution/tests/test_screening_pipeline.py         # 28 tests
 
 python3 execution/render_screening_report.py --demo --out .tmp/demo.html   # see a report
 ```

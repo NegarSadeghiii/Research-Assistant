@@ -450,3 +450,35 @@ support that. They remain visible in the screening report instead.
 **G2 CLOSED.** Next: G3 (Trigger) is the only gate left, and it is deferred — the
 Mon/Sat digest cannot run unattended until either the cloud environment is fixed or a
 local scheduler is configured (D-039).
+
+## 2026-08-19 — Screening pipeline built (SOP-003)
+
+**The architectural question this settled.** Relevance is a judgement, not a
+computation, so it cannot live in a deterministic script — but the registry must not
+inherit whatever a probabilistic layer produces. Resolved by splitting along A.N.T.:
+
+| Layer | Does | Does not |
+|---|---|---|
+| Tools | fetch, extract, normalise, validate, write | judge relevance |
+| Navigation | read anchor + paper, form verdict, state reason and evidence | write to `/state/` |
+
+`record_screening.py` is the boundary. Every verdict is checked against V1–V9 plus
+SOP-003's screening rules; failures are reported and **not stored**.
+
+**Built**
+- `fetch_zotero_corpus.py` — paged, resumable, atomic; records per item whether indexed
+  full text ≥ 500 chars was available. Reports a discrepancy rather than silently
+  screening a subset of the library.
+- `extract_anchor.py` — `.docx` / `.md` / `.txt` / `.tex`. **Verified against the
+  user's real formulation document: 20,134 characters, 158 paragraphs, 3 tables.**
+- `record_screening.py` — validating merge into the registry, atomic write.
+- `test_screening_pipeline.py` — 28 tests.
+
+**The cap that matters (D-050):** a metadata-only record cannot be marked `relevant`.
+Demonstrated live — a three-verdict batch returned 1 accepted and 2 rejected: one for
+claiming `relevant` from an abstract, one for an empty reason.
+
+**Tests:** 188 passing across seven suites.
+
+**Still missing before a real run:** nothing in the code. The remaining inputs are the
+user's — run the fetch against the live library, and confirm the anchor is current.

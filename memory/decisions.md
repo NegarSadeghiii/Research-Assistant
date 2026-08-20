@@ -535,3 +535,30 @@ has already accepted the conclusions.
 contribution is strong enough — it assembles evidence for the author's judgement. That
 boundary keeps P15 intact; a document that concluded "your contribution is sufficient"
 would be optimising for agreement.
+
+### D-049 — Judgement lives in Navigation; persistence lives in Tools
+**Date:** 2026-08-19
+**Decision:** Screening splits across the A.N.T. boundary. `fetch_zotero_corpus.py` and
+`extract_anchor.py` gather; the model forms verdicts; `record_screening.py` validates
+every verdict against V1–V9 plus the screening rules and writes only what passes.
+**Reason:** Invariant 2 says business logic lives in scripts, not model reasoning — but
+relevance is a judgement, not a computation. A regex cannot decide whether a paper's
+formulation bears on a survival-aware MILP, and pretending otherwise produces F5
+directly. The first design had one script that fetched, judged and wrote, which would
+have placed a probabilistic judgement inside the deterministic core and left the
+registry inheriting whatever the model produced. Splitting them, with validation at the
+boundary, is what makes a model-formed verdict safe to store: *the model decides, the
+script refuses.*
+
+### D-050 — A metadata-only record may not be marked `relevant`
+**Date:** 2026-08-19
+**Decision:** SOP-003 §4.4 caps a verdict at `uncertain` when no body text was
+inspected. `irrelevant` remains available where the subject is plainly unrelated.
+**Reason:** Calling a paper genuinely relevant is a claim about its *content*, and an
+abstract is the author's advertisement for that content — the exact gap where F5 lives.
+D-041 established that ~30% of the library is metadata-only, so this is not an edge
+case but a third of every run.
+**Why a rule and not care:** nothing about a record marked `relevant` from an abstract
+*looks* wrong. The error surfaces only when someone reads the paper, by which point the
+verdict has already fed a positioning brief. Capping structurally makes the limit
+visible at write time instead of at manuscript time.
