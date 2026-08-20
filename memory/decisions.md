@@ -498,3 +498,40 @@ also could not reach. `display:none` removes an input from the tab order entirel
 the report's filters would have been unusable without a mouse. The test failure was a
 real accessibility defect, not a test problem — worth recording because the temptation
 was to force the click and move on.
+
+### D-046 — The BUILD note renderer matches the existing skill's format exactly
+**Date:** 2026-08-19
+**Decision:** `render_build_note.py` writes the five-stage structure defined by the
+`build-lit-review` skill — B: Reading purposes · U: Knowledge gaps to research ·
+I: Core idea · L: Alignment · D: What I learned — using the skill's own headings.
+**Reason:** The skill already defines this format and already writes these files.
+Inventing a second structure would have produced two incompatible note formats for the
+same workflow. The stage names were read from the skill rather than guessed.
+**The load-bearing behaviour:** the tool refuses (`exit 3`) when given a stage with no
+content. It writes the reader's words into the right file; it never produces stage
+content on her behalf. That is BR-1 and P4 mechanised — the one workflow where the
+assistant producing text *is itself* the failure.
+
+### D-047 — 'uncertain' does not qualify for the digest
+**Date:** 2026-08-19
+**Decision:** Only a `relevant` verdict carrying a non-empty reason qualifies a record
+for the monitoring digest. `uncertain` records stay in the screening report.
+**Reason:** A digest asserts "this is worth your attention this week". Uncertainty
+cannot support that assertion, and admitting it would push the digest toward the
+padding BR-18 and F2 exist to prevent. The uncertain record is not hidden — it is
+visible in the screening report, where its weaker evidence is displayed alongside it.
+
+### D-048 — A positioning brief without a coverage statement is refused
+**Date:** 2026-08-19
+**Decision:** `render_positioning_brief.py` exits 3 unless `--searched` names the
+sources actually consulted. The rendered brief puts coverage — searched and explicitly
+NOT searched — **before** any positioning section.
+**Reason:** F6 is the failure where absence of evidence becomes a novelty claim. A
+brief whose search boundaries are unrecorded cannot bound any conclusion it draws, so
+refusing is more useful than emitting one with an empty caveat. Coverage leads the
+document rather than trailing it because a caveat at the end arrives after the reader
+has already accepted the conclusions.
+**Also enforced:** the brief states plainly that it does not rule on whether the
+contribution is strong enough — it assembles evidence for the author's judgement. That
+boundary keeps P15 intact; a document that concluded "your contribution is sufficient"
+would be optimising for agreement.

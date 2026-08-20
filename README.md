@@ -19,7 +19,7 @@ authority — code obeys it, and a logic change updates it *before* the code.
 |---|---|
 | ✅ **G0 — Blueprint** | closed 2026-08-19. Requirements, data schema, and 25 behavioural rules confirmed |
 | ✅ **G1 — Link** | closed 2026-08-19. Zotero, OpenAlex, PubMed, Crossref verified live |
-| 🟡 **G2 — Stylize** | screening report built and tested; digest, brief and BUILD note pending |
+| ✅ **G2 — Stylize** | all four payloads built and tested; screening report signed off |
 | ⬜ **G3 — Trigger** | not started. No scheduled runs |
 
 ### What works today
@@ -31,10 +31,11 @@ authority — code obeys it, and a logic change updates it *before* the code.
   introductions and conclusions or is confined to metadata.
 - **A registry validator** enforcing nine rules that reject unsupportable records at
   write time.
-- **A screening-report renderer** that shows, per record, which sections were actually
-  read — so a metadata-only verdict *looks* weaker than a full-text one without any
-  disclaimer.
-- **112 passing tests**, including headless-browser tests that drive the report's
+- **All four payload renderers** — screening report (HTML, grouped and filterable),
+  monitoring digest (DOCX), positioning brief (DOCX), BUILD session notes (Markdown).
+  The screening report shows, per record, which sections were actually read, so a
+  metadata-only verdict *looks* weaker than a full-text one without any disclaimer.
+- **160 passing tests**, including headless-browser tests that drive the report's
   filters and confirm no record is ever removed from the file.
 
 ### What does not exist yet
@@ -101,12 +102,16 @@ Requires Python 3.11+ and a `.env` (see [`.env.example`](.env.example)).
 python3 execution/probes/run_all.py                       # G1 gate check
 python3 execution/measure_zotero_coverage.py --sample 50   # full-text coverage
 python3 execution/validate_registry.py                     # validate the registry
+python3 execution/render_digest.py --demo --out .tmp/d.docx           # digest (BR-18)
+python3 execution/render_positioning_brief.py --idea x --demo         --searched "Zotero, OpenAlex" --out .tmp/b.docx               # brief (draft only)
+python3 execution/render_build_note.py --title "Paper" --stage B         --content "my purposes"                                       # BUILD note
 
 python3 execution/tests/test_validate_registry.py          # 21 tests
 python3 execution/tests/test_probe_classification.py       #  9 tests
 python3 execution/tests/test_env_loading.py                # 12 tests
 python3 execution/tests/test_render_screening_report.py    # 38 tests
 python3 execution/tests/test_report_interactivity.py       # 32 tests (headless Chromium)
+python3 execution/tests/test_render_payloads.py            # 46 tests
 
 python3 execution/render_screening_report.py --demo --out .tmp/demo.html   # see a report
 ```

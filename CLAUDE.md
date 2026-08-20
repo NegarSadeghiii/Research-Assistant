@@ -6,7 +6,7 @@
 
 **Build protocol:** B.L.A.S.T. (Blueprint → Link → Architect → Stylize → Trigger)
 **Build layers:** A.N.T. (Architecture → Navigation → Tools)
-**Current state:** 🟢 **G0 + G1 CLOSED** (2026-08-19). Zotero, OpenAlex, PubMed and
+**Current state:** 🟢 **G0 + G1 + G2 CLOSED** (2026-08-19). Zotero, OpenAlex, PubMed and
 Crossref verified green from **local execution** (D-039); Semantic Scholar optional
 (D-038). Full-text coverage measured at 70% (§2.7 P4). Next: the BR-25 audit, then
 `SOP-003-screening`.
@@ -86,7 +86,7 @@ and needs the user's current methodology document (BR-9).
 |---|---|---|
 | **G0 — Blueprint** | Q1–Q5 answered, Data Schema below filled, user approves | ✅ **CLOSED 2026-08-19** — schema confirmed by user |
 | **G1 — Link** | Every credential probed green, logged in `progress.md` | ✅ **CLOSED 2026-08-19** — 4/4 required green locally |
-| **G2 — Stylize** | Every output has a verify command; user signs off | 🟡 **1 of 4 payloads built** — screening report done, awaiting sign-off |
+| **G2 — Stylize** | Every output has a verify command; user signs off | ✅ **CLOSED 2026-08-19** — 4/4 payloads built; screening report signed off by user |
 | **G3 — Trigger** | Firing mechanism live and documented below | ⏸ blocked by G2 |
 
 ~~While G0 is open, writing logic into `/execution/` is forbidden.~~ **G0 closed
@@ -896,11 +896,14 @@ python3 execution/measure_zotero_coverage.py   # BR-8 / P4 coverage measurement
 | **T — Tools** | `/execution/` | atomic, deterministic, individually testable scripts |
 
 ### S — Stylize
-**Screening report built** — `execution/render_screening_report.py`, SOP-004, 70 tests
-(38 markup + 32 headless-browser). Renders evidence strength per record (D-041),
-retains rejections (BR-20), marks non-citable records as candidates (§3.0), and carries
-grouping and filtering as **view controls that never remove a record from the file**
-(SOP-004 §6.1). Digest, positioning brief and BUILD note skeleton remain.
+**All four payloads built** — SOP-004, 160 tests total.
+
+| Payload | Tool | Rule it exists to honour |
+|---|---|---|
+| Screening report (HTML) | `render_screening_report.py` | BR-20 rejections retained · D-041 evidence strength shown per record · §3.0 candidate vs support · grouping/filtering are **view controls that never remove a record from the file** (§6.1) |
+| Monitoring digest (DOCX) | `render_digest.py` | **BR-18** — zero qualifying papers writes *no file* and exits 0 |
+| Positioning brief (DOCX) | `render_positioning_brief.py` | **BR-3/P3/F6** — refuses to render without a recorded coverage statement · BR-5 draft only, never committed |
+| BUILD notes (Markdown) | `render_build_note.py` | **BR-1/P4** — refuses to write stage content the reader has not supplied |
 
 ```
 python3 execution/render_screening_report.py --demo --out .tmp/demo.html
@@ -1157,7 +1160,8 @@ When anything fails:
 | 2026-08-19 | Early reachability probe | §2.6 — Zotero + 4 discovery APIs unreachable from remote container; Consensus + WebSearch green | n/a |
 | 2026-08-19 | Blueprint Q3 answered | §2.8 source-of-truth model; `/state/` defined; BR-9..BR-16; BR-5 scoped to intellectual output | n/a |
 | 2026-08-19 | Blueprint Q4 answered | §2.9 four payloads/paths/formats; §2.10 open items O1–O3; BR-17..BR-20 | n/a |
-| 2026-08-19 | Phase S begun | SOP-004 payload rendering; screening report renderer + 28 tests | SOP-004 |
+| 2026-08-19 | Phase S begun | SOP-004 payload rendering; screening report renderer | SOP-004 |
+| 2026-08-19 | **G2 CLOSED** | All four payloads built and tested (160 tests); screening report signed off | SOP-004 |
 | 2026-08-19 | Existing-project entry rule | §2.4c audit-first entry; BR-25 | n/a |
 | 2026-08-19 | Research lifecycle specified | §2.4b nine stages + gating; BR-23, BR-24 | n/a |
 | 2026-08-19 | **G0 CLOSED** — Data Schema confirmed | `/execution/` unlocked | n/a |

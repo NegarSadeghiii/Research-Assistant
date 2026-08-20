@@ -417,3 +417,36 @@ the rendered data.
 
 **Tests:** 12 env + 10 classification + 22 validator + 38 renderer markup + 32
 interactivity = **112 passing**.
+
+## 2026-08-19 — G2 CLOSED: all four payloads built
+
+User signed off on the screening report ("its ok"). Built the remaining three.
+
+| Payload | Tool | Tests target |
+|---|---|---|
+| BUILD notes (MD) | `render_build_note.py` | BR-1 / P4 |
+| Monitoring digest (DOCX) | `render_digest.py` | BR-18 |
+| Positioning brief (DOCX) | `render_positioning_brief.py` | BR-3 / P3 / F6, BR-5 |
+
+**The BUILD note format was read from the `build-lit-review` skill, not invented.** It
+already defines the five-stage note structure and already writes these files; a second
+format would have split the same workflow across two incompatible layouts.
+
+**Three refusals are the point of these tools, and each is tested:**
+1. A BUILD stage supplied with no content → exit 3. The tool never writes stage content
+   on the reader's behalf.
+2. Zero qualifying papers → **no file**, exit 0, `outcome: no_qualifying_papers`.
+   Verified by asserting the target path does not exist afterwards.
+3. A positioning brief with no recorded coverage → exit 3. A brief that cannot state
+   what it searched cannot bound the claims it makes.
+
+**Design decision recorded (D-047):** `uncertain` records do not qualify for the
+digest. A digest asserts something is worth attention this week; uncertainty cannot
+support that. They remain visible in the screening report instead.
+
+**Tests:** 12 env + 10 classification + 22 validator + 38 renderer markup +
+32 interactivity + 46 payloads = **160 passing**.
+
+**G2 CLOSED.** Next: G3 (Trigger) is the only gate left, and it is deferred — the
+Mon/Sat digest cannot run unattended until either the cloud environment is fixed or a
+local scheduler is configured (D-039).
