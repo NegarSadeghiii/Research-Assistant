@@ -6,7 +6,7 @@
 
 **Build protocol:** B.L.A.S.T. (Blueprint → Link → Architect → Stylize → Trigger)
 **Build layers:** A.N.T. (Architecture → Navigation → Tools)
-**Current state:** 🟢 **G0 + G1 + G2 CLOSED** (2026-08-19). Zotero, OpenAlex, PubMed and
+**Current state:** 🟢 **G0 + G1 + G2 CLOSED · Stage 1 capability COMPLETE** (2026-08-19). Zotero, OpenAlex, PubMed and
 Crossref verified green from **local execution** (D-039); Semantic Scholar optional
 (D-038). Full-text coverage measured at 70% (§2.7 P4). Next: the BR-25 audit, then
 `SOP-003-screening`.
@@ -438,11 +438,11 @@ Derived from Q1. **Only Stage 1 is in scope for the current build.**
 
 | Stage | Capability | Status |
 |---|---|---|
-| **1** | **Literature Intelligence** | 🟡 **CURRENT BUILD TARGET** |
-| 1a | Zotero-backed screening, classification, prioritization | pending Blueprint |
-| 1b | BUILD-guided deep reading (no-summary discipline) | pending Blueprint |
-| 1c | Positioning + adversarial novelty assessment | pending Blueprint |
-| 1d | New-publication monitoring digest | pending Blueprint |
+| **1** | **Literature Intelligence** | ✅ **BUILT** — 232 tests |
+| 1a | Zotero-backed screening, classification, prioritization | ✅ SOP-003 |
+| 1b | BUILD-guided deep reading (no-summary discipline) | ✅ `render_build_note.py` + the `build-lit-review` skill |
+| 1c | Positioning + adversarial novelty assessment | ✅ SOP-005 discovery + `render_positioning_brief.py` |
+| 1d | New-publication monitoring digest | ✅ `discover_related.py --since` + `render_digest.py`; ⏸ scheduling is G3 |
 | **2** | Methodology development & defense | ⏸ future |
 | **3** | Reproducible computational research (GitHub, experiments, validation) | ⏸ future |
 | **4** | Manuscript development (specialized subagent) | ⏸ future |
@@ -886,7 +886,8 @@ python3 execution/measure_zotero_coverage.py   # BR-8 / P4 coverage measurement
 
 ### A — Architect
 **SOPs authored:** `SOP-000-conventions` · `SOP-001-connection-probes` ·
-`SOP-002-registry-validation` · `SOP-003-screening` · `SOP-004-payload-rendering`.
+`SOP-002-registry-validation` · `SOP-003-screening` · `SOP-004-payload-rendering` ·
+`SOP-005-discovery`.
 **Tools built:** 5 probes + `run_all` · `measure_zotero_coverage` ·
 `validate_registry`, with 30 passing tests.
 | Layer | Location | Contents |
@@ -1162,6 +1163,7 @@ When anything fails:
 | 2026-08-19 | Blueprint Q4 answered | §2.9 four payloads/paths/formats; §2.10 open items O1–O3; BR-17..BR-20 | n/a |
 | 2026-08-19 | Phase S begun | SOP-004 payload rendering; screening report renderer | SOP-004 |
 | 2026-08-19 | Screening pipeline built | SOP-003; fetch_zotero_corpus, extract_anchor, record_screening + 28 tests | SOP-003 |
+| 2026-08-19 | **Stage 1 COMPLETE** | SOP-005 discovery + reconciliation; citation-graph expansion; 232 tests | SOP-005 |
 | 2026-08-19 | **G2 CLOSED** | All four payloads built and tested (160 tests); screening report signed off | SOP-004 |
 | 2026-08-19 | Existing-project entry rule | §2.4c audit-first entry; BR-25 | n/a |
 | 2026-08-19 | Research lifecycle specified | §2.4b nine stages + gating; BR-23, BR-24 | n/a |

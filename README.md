@@ -117,6 +117,8 @@ python3 execution/tests/test_render_screening_report.py    # 38 tests
 python3 execution/tests/test_report_interactivity.py       # 32 tests (headless Chromium)
 python3 execution/tests/test_render_payloads.py            # 46 tests
 python3 execution/tests/test_screening_pipeline.py         # 28 tests
+python3 execution/tests/test_discovery.py                  # 44 tests
+python3 execution/tests/test_screening_pipeline.py         # 28 tests
 
 python3 execution/render_screening_report.py --demo --out .tmp/demo.html   # see a report
 ```
@@ -168,12 +170,13 @@ claim would otherwise be laundered into an established one.
 
 | Stage | Capability | Status |
 |---|---|---|
-| 1 | Literature intelligence | 🟡 foundations only |
+| 1 | Literature intelligence | ✅ **complete** — discovery, screening, positioning, digest |
 | 2 | Methodology development & defence | ⏸ specified, unbuilt |
 | 3 | Reproducible computational research | ⏸ specified, unbuilt |
 | 4 | Manuscript development | ⏸ specified, unbuilt |
 
-Next: the screening SOP and tool, then a first real screening run.
+Next: G3 (Trigger) — scheduling the twice-weekly digest. Blocked on the runtime
+question (D-039), not on any missing capability.
 
 ---
 

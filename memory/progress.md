@@ -482,3 +482,34 @@ claiming `relevant` from an abstract, one for an empty reason.
 
 **Still missing before a real run:** nothing in the code. The remaining inputs are the
 user's — run the fetch against the live library, and confirm the anchor is current.
+
+## 2026-08-19 — Stage 1 COMPLETE: external discovery and reconciliation
+
+**Built** — SOP-005 written before the code:
+- `execution/discover_related.py` — OpenAlex, PubMed and Crossref search; OpenAlex
+  citation-graph expansion in both directions; `--since` for monitoring runs;
+  `--dry-run` prints the exact requests without issuing them (API key redacted).
+- `execution/reconcile_candidates.py` — dedup on DOI first, title+year fallback;
+  classifies `new` / `in_library` / `already_screened`; flags source disagreements as
+  unresolved conflicts.
+- `execution/tests/test_discovery.py` — **44 tests**, offline against fixtures.
+
+**The design decision that matters (D-049).** Discovery emits candidates, never
+verdicts. The first sketch scored candidates by query-match strength, which is F5 with
+an API in front of it. Keywords are legitimate for *retrieval* and forbidden for
+*judgement*; every candidate is screened against the anchor before any verdict exists.
+
+**How terminology drift is actually handled (D-050).** Multiple query formulations
+widen the net, but only citation-graph traversal crosses vocabularies — a paper citing
+yours is related whether or not it shares your words. The tool warns when given a
+single formulation.
+
+**Anchor-relative reconciliation.** A paper screened against a *different* anchor is
+classified `new`, not `already_screened`. Relevance is anchor-relative; a verdict about
+one methodology does not settle a question about another. Tested explicitly.
+
+**Tests:** 44 discovery + 28 screening + 46 payloads + 38 renderer + 32 interactivity +
+22 validator + 12 env + 10 classification = **232 passing**.
+
+**Stage 1 is complete.** G3 (Trigger) remains, and is blocked on the runtime question
+(D-039) rather than on any missing capability.

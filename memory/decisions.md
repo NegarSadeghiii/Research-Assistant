@@ -562,3 +562,37 @@ case but a third of every run.
 *looks* wrong. The error surfaces only when someone reads the paper, by which point the
 verdict has already fed a positioning brief. Capping structurally makes the limit
 visible at write time instead of at manuscript time.
+
+### D-049 — Discovery emits candidates, never verdicts
+**Date:** 2026-08-19
+**Decision:** `discover_related.py` returns candidate papers with the source and query
+that found them. It never scores relevance. Every candidate goes through SOP-003
+screening against the anchor document before any verdict exists.
+**Reason:** The first sketch scored candidates by query-match strength. That is F5 with
+an API in front of it — a keyword hit would have been laundered into a relevance claim.
+The distinction that keeps discovery honest is that keywords are legitimate for
+**retrieval** (casting a net) and forbidden for **judgement** (deciding what matters).
+
+### D-050 — Citation-graph expansion is the answer to terminology drift
+**Date:** 2026-08-19
+**Decision:** Discovery combines multiple query formulations with OpenAlex
+citation-graph traversal in both directions from seed DOIs. The tool warns when given
+only one query formulation.
+**Reason:** Q1 requires finding work that uses *different terminology for the same
+idea*. Keyword search structurally cannot do this — a query returns one vocabulary's
+literature. Citation links are vocabulary-independent: a paper citing yours is related
+whether or not it shares your words. Multiple formulations widen the net; the citation
+graph is what actually crosses vocabularies.
+**Known weakness, recorded:** Semantic Scholar's recommendations API would have been a
+third vocabulary-independent mechanism (positive/negative seed examples). It is
+unavailable under D-038, so this design has one fewer independent path than intended.
+
+### D-051 — A failed source is recorded as "not searched", never dropped
+**Date:** 2026-08-19
+**Decision:** When a source errors during discovery, it is recorded in
+`sources_not_searched` and carried through reconciliation into the positioning brief's
+coverage statement.
+**Reason:** The coverage statement is what bounds every novelty claim (F6). A silently
+dropped source would make that statement quietly false while looking complete — the
+brief would claim coverage it never had. Recording the failure keeps the boundary
+honest even when the run was degraded.
